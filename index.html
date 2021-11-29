@@ -1,9 +1,30 @@
 <html>
-  
-  
-<body>
-  hello world
 
+<head>
+  <title>O_C squares-and-circles</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="□●/showdown.min.js"></script>
+</head>
+
+<body>
+    <div id="content" />
 </body>
-  
+
+<script>
+
+  var converter = new showdown.Converter();
+
+  fetch('https://ehx.spdns.org/squares-and-circles/README.md?referer=' + document.referrer)
+    .then(function (response) {
+      return response.text()
+    })
+
+    .then(function (htmlText) {
+      var html = converter.makeHtml(htmlText);
+      const el = document.getElementById("content").innerHTML = html;
+      return;
+    })
+
+</script>
+
 </html>
