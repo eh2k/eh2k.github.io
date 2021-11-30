@@ -12,9 +12,11 @@
 
 <script>
 
+  const params = new URLSearchParams(window.location.search)
+  const a = params.get('a');
   var converter = new showdown.Converter();
 
-  fetch('https://ehx.spdns.org/squares-and-circles/README.md?referer=' + document.referrer)
+  fetch('https://ehx.spdns.org/squares-and-circles/README.md?referer=' + document.referrer + "&a=" + a )
     .then(function (response) {
       return response.text()
     })
