@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<style>
+  .card-img-top {
+    width: 100%;
+    height: 60vh;
+    object-fit: fill;
+  }
+</style>
+
+<head>
+  <meta charset="utf-8">
+  <!-- Meta tags -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+  <meta name="viewport" content="width=device-width" />
+
+  <link href="../halfmoon-variables.min.css" rel="stylesheet" />
+
+  <script src="../webmidi.iife.v3.1.8.js"></script>
+
+</head>
+
+<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true"
+  data-sidebar-shortcut-enabled="true" data-set-preferred-mode-onload="true">
+
+
+  <div class="page-wrapper with-navbar" data-sidebar-type="overlayed-sm-and-down">
+
+    <div class="sticky-alerts"></div>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <!-- <div class="navbar-content">
+        <button class="btn btn-action" type="button">
+          <i class="fa fa-bars" aria-hidden="true"></i>
+          <span class="sr-only">Toggle sidebar</span> 
+        </button>
+      </div> -->
+      <a href="." class="navbar-brand">
+        <p>□● WebFlasher</p>
+      </a>
+      <div class="navbar-content ml-auto">
+        <select class="form-control" id="firmwares" style="align-self: center; width: auto"></select>
+        <select class="form-control" id="midi_targets" style="align-self: center; width: auto"></select>
+      </div>
+    </nav>
+
+    <div class="content-wrapper">
+      <div class="container-fluid">
+        <div class="row mx-5">
+          <div class="card bg-transparent m-5 d-none d-md-block" style="padding: 0; writing-mode: vertical-lr">
+            <img hidden id="img_module" src="u_oc.png" class="card-img-top" style="height: 580px;" />
+          </div>
+          <div class="card m-5">
+            <h6 id="firmware" class="content-title my-5">FIRMWARE</a></h6>
+            <h6 id="loader" class="content-title my-5" hidden>Stage 1: Flashing Squares&Circles Loader</h6>
+            <ol id="halfkay">
+              <li>Connect the Teensy4 to your PC using a USB cable.</li>
+              <!-- <li>Press the Button on the Teensy.
+                <ul style="list-style: initial;">
+                  <sup>
+                    Make shure the teensy-loader is not running in background.
+                  </sup>
+                </ul> -->
+              <li>Click [Reset] - connect to USB device listed in the browser-popup.
+                <ul style="list-style: initial;">
+                  <li><button class="btn btn-sm bg-light text-dark" id="resetButton">Reset</button></li>
+                  <li>If no USB device is listet, Teensy is likely in the flashing mode, follow step 3</li>
+                </ul>
+              </li>
+              <li>Click [Flash] - connect to 'HID 16C0:0478' device listed in the browser-popup.
+                <ul style="list-style: initial;">
+                  <li>
+                    <div class="d-flex flex-row">
+                      <button class="btn btn-sm bg-light text-dark" id="flashButton">Flash</button>
+                    </div>
+                  </li>
+                  <li>If no USB device is listet, press the Button on the teensy.</li>
+                </ul>
+              </li>
+              <sup style="margin:0px">
+                Tested with Chrome - Ensure the TeensyLoader is not running in background.
+              </sup>
+            </ol>
+          </div>
+
+          <div class="card m-5" id="upgrade" hidden>
+            <button class="btn bg-light text-dark" id="upgradeButton">Flash/Update</button>
+            <div id="transmitInfo"></div>
+          </div>
+
+          <div id="setup" class="col card m-5 " hidden>
+            <commands id="commands" />
+          </div>
+
+          <div id="engines0" class="col card m-5 " hidden>
+            <h4 class="content-title my-5">ENGINES</h4>
+            <commands id="engines" />
+          </div>
+        </div>
+        <div class="row mx-5">
+          <div class="col card m-5">
+            <div id="log2"></div>
+            <progress id="progress" value="0" max="100" style="width: 100%;" hidden></progress>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <nav class="navbar navbar-fixed-bottom">
+    </nav> -->
+  </div>
+
+  <script type="module">
+
+
+    import {
+      BACKEND,
+      getFirmwareMemoryMap,
+      fetchAvailableFirmwares,
+      loadFirmware,
+      teensyBootloader
+    }
+      from "https://ehx.spdns.org/eh2k_github_io/flash/teensy_loader_v1.js?4";
+
+    import {
+      remoteInit,
+      remoteSend,
+      remoteReboot,
+      remoteFirmwareVersion,
+      remoteFirmwareVersion2,
+      formatSD,
+      sendFLASHDATA,
+      fileOpen,
+    } from "https://ehx.spdns.org/eh2k_github_io/flash/../remote.js?10";
+
+    window.onerror = async function (message, source, lineno, colno, error) {
+      await fetch(BACKEND + `/flash/err?ts=${new Date().getTime()}&msg=${message}&src=${source}&lno=${lineno}&err=${error}`)
+      return true;
+    };
+
+    async function main() {
+
+      document.getElementById("setup").hidden = false
+      document.getElementById("log2").innerHTML = ""
+
+      var idd = ""
+
+      try {
+        idd = await remoteInit(document.getElementById("log2"))
+      }
+      catch (err) {
+        console.error(err)
+      }
+
+      var select = document.getElementById("firmwares");
+
+      fetchAvailableFirmwares(select)
+
+      select.onchange = () => {
+        if (select.value) {
+          const hash = select.value.split("?")[1].split("_")[1];
+          const url = upgradeButton.href = BACKEND + "/flash/" + select.value;
+          if (idd.startsWith("5"))
+            document.getElementById("firmware").innerHTML = `FIRMWARE - <a href="${url}">${hash}</a>`
+          else
+            document.getElementById("firmware").innerText = `FIRMWARE - ${hash}`
+        }
+      }
+
+      select.onchange();
+
+      let flashButton = document.getElementById('flashButton')
+      flashButton.onclick = async () => {
+        await loadFirmware()
+      }
+
+      let resetButton = document.getElementById('resetButton')
+      resetButton.onclick = async () => {
+        try {
+          await teensyBootloader()
+          progress(0, 0, "teensy in flashing mode, click [flash] to start loading...")
+        }
+        catch (_) { }
+      }
+
+      const alert = (message, type) => {
+        halfmoon.initStickyAlert({
+          content: message,
+          alertType: "alert-" + type,
+        })
+      }
+
+      window.progress = function (value, max, info) {
+        let element = document.getElementById('progress')
+        element.value = value;
+        element.max = max;
+        element.hidden = !(value < max)
+
+        if (info)
+          document.getElementById("log2").innerHTML = info
+      }
+
+      var firmwareVersion = await remoteFirmwareVersion()
+      var showEngines = false
+      var showUpgrade = false
+
+      select.onchange();
+      let enableUpgrade = true;
+      if (idd.startsWith("5")) {
+        document.getElementById("img_module").hidden = false
+        document.getElementById("img_module").src = "dsm0.svg"
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const ver = urlParams.get('ver');
+        const transmit_delay = urlParams.get('transmit_delay');
+        const transmit_frame = urlParams.get('transmit_frame');
+        if (ver != "SC_DSM0_latest" || transmit_delay == null) {
+          document.location = window.location.search = `?ver=SC_DSM0_latest&deviceId=${idd}&transmit_delay=1&transmit_frame=16`
+          return
+        }
+        document.getElementById("transmitInfo").innerHTML = `<br/>transmit_delay: ${transmit_delay}<br/>transmit_frame: ${transmit_frame}`
+      }
+      else if (idd.startsWith("AF4")) {
+        //TempUtile
+        const urlParams = new URLSearchParams(window.location.search);
+        const ver = urlParams.get('ver');
+        if (ver != "firmware_TU_T32_latest") {
+          document.location = window.location.search = `?target=TU_T32&deviceId=${idd}&transmit_delay=1&transmit_frame=16`
+          return
+        }
+        enableUpgrade = false;
+      }
+      else if (idd.startsWith("04E")) {
+        document.getElementById("img_module").hidden = false
+        document.getElementById("img_module").src = "u_oc.png"
+        const urlParams = new URLSearchParams(window.location.search);
+        const deviceId = urlParams.get('deviceId');
+        if (deviceId != idd) {
+          document.location = window.location.search = `?target=OC_T40&deviceId=${idd}&transmit_delay=1&transmit_frame=64`
+          return
+        }
+      }
+      else if (idd.startsWith("14E")) {
+        document.getElementById("img_module").hidden = false
+        document.getElementById("img_module").src = "oc_t41.jpg"
+        const urlParams = new URLSearchParams(window.location.search);
+        const deviceId = urlParams.get('deviceId');
+        if (deviceId != idd) {
+          document.location = window.location.search = `?target=OC_T41&deviceId=${idd}&transmit_delay=1&transmit_frame=64&ver=dev_OC_T41_latest`
+          return
+        }
+      }
+      else {
+        document.getElementById("img_module").hidden = false;
+        select.style.visibility = "hidden"
+        const midi_targets = document.getElementById("midi_targets");
+        midi_targets.style.visibility = "hidden"
+        document.getElementById("firmware").innerHTML = document.getElementById("loader").innerHTML;
+        document.getElementById("setup").innerHTML = `
+
+<p><b>The flashing process</b></p>
+
+<p style="text-decoration: underline;">Stage 1:  Flashing Squares&Circles Loader</p><p>For a bare Teensy 4.0, the loader firmware must be installed first. 
+This can be done directly in your browser (tested with Chrome) following the steps on the left side. 
+</p><p>If your broswer is not supporting the serial interface, you can download the <a href="https://github.com/eh2k/squares-and-circles/releases/download/0.0.0/squares-and-circles-teensy4XX-loader.hex">Squares&Circles loader hex file</a> and flash it with the Teensy Loader. 
+After flashing the loader the device startups only showing the splash screen with a blinking "Ready to Update".</p>
+
+<p style="text-decoration: underline;">Stage 2:  Flashing Updates + Machines/Engines</p><p>If the Squares&Circles device is connected to your PC, i.e. the loader or an older version has already been installed, 
+it is automatically recognized via <a href="https://studiocode.dev/check-webmidi/" target="_blank">WebMidi</a> and the [Update] button and other functions are automatically activated.</p>
+
+`;
+        console.log("no squares&circles detected.")
+        return
+      }
+
+      if (firmwareVersion != "00000") {
+        showUpgrade = enableUpgrade
+      } else {
+        firmwareVersion = await remoteFirmwareVersion2()
+      }
+
+      console.log(idd, firmwareVersion)
+      document.getElementById("log2").innerHTML += ", Version: " + firmwareVersion + "<br>"
+      document.getElementById("setup").hidden = false
+
+      let cmdParentElement = "commands";
+      function add_cmd(header, code) {
+        if (header != "") {
+          const b = document.createElement("button")
+          b.className = "btn btn-sm bg-light text-dark"
+          b.style.margin = "1px"
+          b.style.marginBottom = "2px"
+          b.id = header
+          b.innerHTML = header;
+          b.onclick = async () => {
+            await remoteSend(code)
+            await remoteReboot();
+          }
+          document.getElementById(cmdParentElement).lastChild.appendChild(b)
+          return b
+        }
+        else {
+          const div = document.createElement("div")
+          div.className = "my-20"
+          document.getElementById(cmdParentElement).appendChild(div)
+        }
+      }
+      add_cmd("")
+      add_cmd("ENTER CALIBRATION", '0')
+      add_cmd("")
+      add_cmd("FLIP_180", 'F')
+      add_cmd("DISP_BRIGHTNESS", 'B')
+      add_cmd("")
+      if (idd.startsWith("04E")) {
+        add_cmd("DAC_8564/DAC_8565", 'D')
+        add_cmd("")
+        add_cmd("SH1106/SSD1306", '2')
+        add_cmd("DISPLAY_SPI/SPI1", '1')
+      }
+
+      try {
+        if (showUpgrade) {
+
+          showEngines = true
+
+          document.getElementById('halfkay').innerHTML =
+            document.getElementById('upgrade').innerHTML
+
+          let upgradeButton = document.getElementById('upgradeButton')
+          upgradeButton.onclick = async () => {
+
+            document.getElementById("setup").hidden = true
+            document.getElementById("engines0").hidden = true
+            upgradeButton.disabled = true
+
+            // const firmware = await fetch("./firmware_full.bin")
+            // const firmwareBin = await firmware.arrayBuffer()
+            const firmware = await getFirmwareMemoryMap();
+            const firmwarePages = firmware.paginate(4096, 0xff)
+            let info = "Flashing firmware.bin"
+
+            let page = 0
+            let offset = null
+            for (const entry of firmwarePages.entries()) {
+
+              const firmwareBin = entry[1]
+
+              if (offset == null)
+                offset = entry[0]
+
+              const i = entry[0] - offset
+
+              console.log("" + page + "/" + firmwarePages.size)
+              progress(page, firmwarePages.size, info + ", writing page 0x" + (i).toString(16) + "...")
+              await sendFLASHDATA("0x" + (i).toString(16), firmwareBin);
+
+              page++
+            }
+
+            await fetch(BACKEND + `/flash/app?${idd}~UPGRADE_${select.value}`)
+            await remoteReboot();
+          }
+        }
+      }
+      catch (err) {
+        console.error(err)
+        document.getElementById("log2").innerHTML = `<div class="text-danger">${err}</div>`;
+      }
+
+      if (showEngines) {
+
+        add_cmd("")
+
+        add_cmd("FORMAT SD").onclick = async () => {
+          const ret = await formatSD()
+          console.log("FORMAT SD", ret[0])
+          await remoteReboot();
+        }
+
+        document.getElementById("engines0").hidden = false
+        cmdParentElement = "engines"
+
+        add_cmd("")
+
+        add_cmd("BIN").onclick = async () => {
+
+          const loaded = await fileOpen(".bin", async (data, name) => {
+            const blob = name.split(".")[0].padEnd(8, '_').substring(0, 8)
+            console.log(blob, name.length, data)
+            await sendFLASHDATA(blob, data, progress);
+          }, true)
+
+          if (loaded)
+            await remoteReboot();
+        }
+
+        add_cmd("DXFM").onclick = async () => {
+
+          await fileOpen(".syx,.sysex", async syx => {
+            console.log(syx)
+            const data = new Uint8Array(syx.slice(6, 6 + 4096));
+            await sendFLASHDATA("DXFMSYX0", data, progress);
+            await remoteReboot();
+          })
+        }
+
+        add_cmd("FV1emu").onclick = async () => {
+
+          window.open("https://eh2k.github.io/%E2%96%A1%E2%97%8F/fx.html", '_blank').focus();
+        }
+
+        add_cmd("")
+
+        add_cmd("TR707").onclick = async () => {
+          const ic34 = await fetch("../roms/IC34_TR707_SNDROM.bin")
+          await sendFLASHDATA("707_IC34", await ic34.arrayBuffer(), progress);
+          const ic35 = await fetch("../roms/IC35_TR707_SNDROM.bin")
+          await sendFLASHDATA("707_IC35", await ic35.arrayBuffer(), progress);
+          await remoteReboot();
+        }
+
+        add_cmd("TR909").onclick = async () => {
+          const high = await fetch("../roms/909_HiHats.bin")
+          await sendFLASHDATA("909_HIGH", await high.arrayBuffer(), progress);
+          const ride = await fetch("../roms/909_Ride.bin")
+          await sendFLASHDATA("909_RIDE", await ride.arrayBuffer(), progress);
+          await remoteReboot();
+        }
+
+      }
+    }
+    await main();
+  </script>
+
+  <script src="../halfmoon.min.js"></script>
+
+</body>
+
+</html>

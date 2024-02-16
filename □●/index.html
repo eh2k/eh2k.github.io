@@ -1,0 +1,77 @@
+<html>
+
+<head>
+  <title>O_C squares-and-circles</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+	    .markdown-body {
+		    box-sizing: border-box;
+		    min-width: 200px;
+		    max-width: 980px;
+		    margin: 0 auto;
+		    padding: 5px;
+	    }
+
+	    @media (max-width: 767px) {
+		    .markdown-body {
+			    padding: 15px;
+		    }
+	    }
+  </style>
+  <script src="marked.min.js"></script>
+</head>
+
+<div hidden>
+  <form id="donation" action="https://www.paypal.com/donate" method="post" target="_top" style="display: inline;">
+    <input id="item_name" type="hidden" name="item_name" value="null">
+    <input type="hidden" name="hosted_button_id" value="DWN3K4MXFU46U" />
+    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit"
+      title="keep up the good work!" alt="Donate with PayPal button" />
+  </form>
+  <a id="gh" href="https://github.com/eh2k/squares-and-circles"><img src="https://img.shields.io/badge/GitHub-eh2k-white?style=flat&logo=github" /></a>
+</div>
+
+<body class="markdown-body">
+  <div id="content" />
+</body>
+
+<script>
+
+  const params = new URLSearchParams(window.location.search)
+  const a = params.get('a');
+
+  fetch('https://ehx.spdns.org/squares-and-circles/README.md?referer=' + document.referrer + "&a=" + a)
+    .then(function (response) {
+      return response.text()
+    })
+
+    .then(function (mdCode) {
+      var html = marked.parse(mdCode.replaceAll("doc/", "https://ehx.spdns.org/squares-and-circles/doc/"));
+      document.getElementById("content").innerHTML = html;
+
+      var gh = document.getElementById("gh");
+      gh.parentNode.removeChild(gh)
+      const div = document.querySelector('[href*="https://github.com/eh2k/squares-and-circles/actions/workflows/build.yml"]');
+      div.removeChild(div.lastChild);
+      div.appendChild(gh.cloneNode(true));
+
+      if (a) {
+        var donate = document.getElementById("donation");
+        var item_name = document.getElementById("item_name");
+        item_name.value = a || "keep up the good work!";
+
+        donate.parentNode.removeChild(donate)
+        const div = document.querySelector('[href*="https://www.modulargrid.net/e/modules/browser?SearchName=squares+and+circles&SearchShowothers=1"]');
+        //div.removeChild(div.lastChild);
+        div.appendChild(donate.cloneNode(true));
+      
+      
+        //window.location.href = "https://www.paypal.com/donate/?hosted_button_id=DWN3K4MXFU46U&item_name=" + a;
+      }
+
+      return;
+    })
+
+</script>
+
+</html>

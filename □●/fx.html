@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+
+<style>
+  :root,
+  [data-bs-theme=dark] {
+    color-scheme: dark;
+    --bs-body-color: #c9d1d9;
+    --bs-body-bg: #212529;
+  }
+</style>
+
+<head>
+  <meta charset="utf-8">
+  <!-- Meta tags -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+  <meta name="viewport" content="width=device-width" />
+
+  <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/css/halfmoon-variables.min.css" rel="stylesheet" />
+
+  <script src="./webmidi.iife.js"></script>
+</head>
+
+<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true"
+  data-sidebar-shortcut-enabled="true" data-set-preferred-mode-onload="true">
+
+
+  <div class="page-wrapper with-navbar" data-sidebar-type="overlayed-sm-and-down">
+
+    <div class="sticky-alerts"></div>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a href="#" class="navbar-brand">
+        <p>□● FX-Compiler</p>
+      </a>
+    </nav>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="container">
+      <div class="card bg-transparent">
+        <div class="card-body">
+          <div class="sm-8">
+            <div>
+              <label class="col-0 form-label">FX-JSON</label>
+              (<a href="https://github.com/eh2k/squares-and-circles/issues/58">Learn more</a>)
+              <div class="row align-items-start">
+                <input type="text" class="col form-control" readonly id="spn"
+                  value="https://eh2k.github.io/□●/fv1-emu/factory.json"
+                  placeholder="https://raw.githubusercontent.com/...">
+                <div class="col-0">&nbsp;</div>
+                <button id="load" class="col-0 btn-light btn">...</button>
+              </div>
+            </div>
+            <div class="container h-25">
+            </div>
+            <div class="container">
+              <div class="row align-items-start">
+                <label class="col form-label">Name</label>
+                <label class="col form-label">P1</label>
+                <label class="col form-label">P2</label>
+                <label class="col form-label">P3</label>
+              </div>
+            </div>
+            <div id="bank" class="container">
+              <div class="row align-items-start">
+                <input type="text" class="col form-control" id="fx" value="FX" placeholder="Name">
+                <input type="text" class="col form-control" id="p1" value="P1" placeholder="ParamA">
+                <input type="text" class="col form-control" id="p2" value="P2" placeholder="ParamB">
+                <input type="text" class="col form-control" id="p3" value="P3" placeholder="ParamB">
+              </div>
+            </div>
+            <div class="container h-25">
+            </div>
+            <div class="container h-100">
+              <div class="float-right" disabled="true">&nbsp;</div>
+              <button id="compile" class="btn btn-primary float-right" disabled="true">Compile & Flash</button>
+              <div class="float-right" disabled="true">&nbsp;</div>
+              <button id="format" class="btn btn-primary float-right" disabled="true">FormatSD</button>
+            </div>
+            <textarea rows="9" style="width:100%" id="log"></textarea>
+            <div id="log2"></div>
+            <progress id="progress" value="0" max="100" style="width: 100%;" hidden></progress>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import {
+        remoteInit,
+        remoteReboot,
+        formatSD,
+        sendFLASHDATA,
+        fileOpen,
+      } from "https://ehx.spdns.org/eh2k_github_io/remote.js?9";
+
+      const BACKEND = "https://ehx.spdns.org/squares-and-circles-fx"
+
+      try {
+        var udd = await remoteInit(document.getElementById("log"))
+        document.getElementById("format").disabled = false
+        document.getElementById("compile").disabled = false
+      }
+      catch (err) {
+
+      }
+
+      let bank = null
+
+      function loadBank(json) {
+        console.log(json)
+        const copy = document.getElementById("bank").children[0].cloneNode(true)
+        document.getElementById("bank").innerHTML = ""
+        bank = json.slice(0, 8);
+        for (const a of bank) {
+          const row = copy.cloneNode(true);
+          row.children[0].value = a.name;
+          row.children[0].setAttribute("readonly", "")
+          row.children[1].value = a.pot0;
+          row.children[1].setAttribute("readonly", "")
+          row.children[2].value = a.pot1;
+          row.children[2].setAttribute("readonly", "")
+          row.children[3].value = a.pot2;
+          row.children[3].setAttribute("readonly", "")
+          document.getElementById("bank").appendChild(row);
+        }
+      }
+
+      const spn = document.getElementById("spn");
+      const json = await fetch(spn.value);
+      loadBank(await json.json())
+
+      const load = document.getElementById("load").onclick = async () => {
+        await fileOpen(".json", async (data, file) => {
+          loadBank(JSON.parse(new TextDecoder("utf-8").decode(data)))
+          spn.value = file
+        });
+      }
+
+      document.getElementById("compile").onclick = async () => {
+
+        if (bank != null) {
+          for (const y of bank) {
+
+            const name = y.name;
+            const a = y.pot0;
+            const b = y.pot1;
+            const c = y.pot2;
+            const spn_url = y.url
+
+            const url = BACKEND + `/${name}.bin?spn=${spn_url}&name=${name}&paramA=${a}&paramB=${b}&paramC=${c}&udd=${udd}&${+ new Date().getTime()}`;
+            console.log(url)
+
+            const app_bin = await fetch(url)
+            if (!app_bin.ok) {
+              document.getElementById("log").innerHTML = `${app_bin.status} ${await app_bin.text()}`;
+              return
+            }
+            const blob_name = name.replaceAll("/", "");
+            const blob = blob_name.split(".")[0].padStart(8, '_').substring(0, 8);
+            const data = await app_bin.arrayBuffer();
+            console.log(blob, blob.length, data)
+            await sendFLASHDATA(blob, data);
+          }
+
+          await remoteReboot();
+        }
+      }
+
+      document.getElementById("format").onclick = async () => {
+        await formatSD()
+        await remoteReboot();
+      }
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/js/halfmoon.min.js"></script>
+
+</body>
+
+</html>
