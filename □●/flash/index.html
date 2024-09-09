@@ -19,6 +19,7 @@
   <link href="../halfmoon-variables.min.css" rel="stylesheet" />
 
   <script src="../webmidi.iife.v3.1.8.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/webmidi@3.1.11/dist/iife/webmidi.iife.min.js"></script> -->
 
 </head>
 
@@ -122,7 +123,7 @@
       loadFirmware,
       teensyBootloader
     }
-      from "https://eh2k.spdns.org/eh2k_github_io/flash/teensy_loader_v1.js?10";
+      from "https://eh2k.spdns.org/eh2k_github_io/flash/teensy_loader_v1.js?12";
 
     import {
       remoteInit,
@@ -134,7 +135,7 @@
       remoteGetSettings,
       sendFLASHDATA,
       fileOpen,
-    } from "https://eh2k.spdns.org/eh2k_github_io/flash/../remote.js?13";
+    } from "https://eh2k.spdns.org/eh2k_github_io/flash/../remote.js?15";
 
     window.onerror = async function (message, source, lineno, colno, error) {
       await fetch(BACKEND + `/flash/err?ts=${new Date().getTime()}&msg=${message}&src=${source}&lno=${lineno}&err=${error}`)
@@ -157,7 +158,7 @@
 
       var select = document.getElementById("firmwares");
 
-      fetchAvailableFirmwares(select)
+      await fetchAvailableFirmwares(select)
 
       select.onchange = () => {
         if (select.value) {
@@ -205,28 +206,38 @@
       var showEngines = false
       var showUpgrade = false
 
+      const urlParams = new URLSearchParams(window.location.search);
+      let sha = urlParams.get('sha');
+      if (sha)
+        sha = `&sha=${sha}`
+      else
+        sha = ""
+      const select0 = urlParams.get('select');
+      if (select0)
+        sha += `&select=${select0}`
+
       select.onchange();
       let enableUpgrade = true;
       if (idd.startsWith("5")) {
+
         document.getElementById("img_module").hidden = false
         document.getElementById("img_module").src = "dsm0.svg"
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const transmit_delay = urlParams.get('transmit_delay');
-        const transmit_frame = urlParams.get('transmit_frame');
         const deviceId = urlParams.get('deviceId');
         if (deviceId != idd) {
-          document.location = window.location.search = `?target=SC_DSM0&deviceId=${idd}&transmit_delay=1&transmit_frame=16`
+          document.location = window.location.search = `?target=SC_DSM0&deviceId=${idd}&transmit_delay=1&transmit_frame=16${sha}`
           return
         }
+
+        const transmit_delay = urlParams.get('transmit_delay');
+        const transmit_frame = urlParams.get('transmit_frame');
         document.getElementById("transmitInfo").innerHTML = `<br/>transmit_delay: ${transmit_delay}<br/>transmit_frame: ${transmit_frame}`
       }
       else if (idd.startsWith("AF4")) {
         //TempUtile
-        const urlParams = new URLSearchParams(window.location.search);
         const ver = urlParams.get('ver');
         if (ver != "firmware_TU_T32_latest") {
-          document.location = window.location.search = `?target=TU_T32&deviceId=${idd}&transmit_delay=1&transmit_frame=16`
+          document.location = window.location.search = `?target=TU_T32&deviceId=${idd}&transmit_delay=1&transmit_frame=16${sha}`
           return
         }
         enableUpgrade = false;
@@ -234,20 +245,18 @@
       else if (idd.startsWith("04E")) {
         document.getElementById("img_module").hidden = false
         document.getElementById("img_module").src = "u_oc.png"
-        const urlParams = new URLSearchParams(window.location.search);
         const deviceId = urlParams.get('deviceId');
         if (deviceId != idd) {
-          document.location = window.location.search = `?target=OC_T40&deviceId=${idd}&transmit_delay=1&transmit_frame=64`
+          document.location = window.location.search = `?target=OC_T40&deviceId=${idd}&transmit_delay=1&transmit_frame=64${sha}`
           return
         }
       }
       else if (idd.startsWith("14E")) {
         document.getElementById("img_module").hidden = false
         document.getElementById("img_module").src = "oc_t41.jpg"
-        const urlParams = new URLSearchParams(window.location.search);
         const deviceId = urlParams.get('deviceId');
         if (deviceId != idd) {
-          document.location = window.location.search = `?target=OC_T41&deviceId=${idd}&transmit_delay=1&transmit_frame=64`
+          document.location = window.location.search = `?target=OC_T41&deviceId=${idd}&transmit_delay=1&transmit_frame=64${sha}`
           return
         }
       }
@@ -274,13 +283,17 @@ it is automatically recognized via <a href="https://studiocode.dev/check-webmidi
         return
       }
 
+      // if (firmwareVersion.startsWith("e030c30")) {
+      //   showUpgrade = false;
+      // } else 
       if (firmwareVersion != "00000") {
         showUpgrade = enableUpgrade
       } else {
         firmwareVersion = await remoteFirmwareVersion2()
       }
 
-      console.log(idd, firmwareVersion)
+      console.log("DeviceId:", idd)
+      console.log("Firmware:", firmwareVersion)
       document.getElementById("log2").innerHTML += ", Version: " + firmwareVersion + "<br>"
       document.getElementById("setup").hidden = false
 
@@ -312,14 +325,14 @@ it is automatically recognized via <a href="https://studiocode.dev/check-webmidi
 
       const settings = await remoteGetSettings();
 
-      add_cmd((settings["FLIP_180"] ? "☑" : "☐") + " FLIP_180", 'F')
-      add_cmd((settings["MAX_BRIGHTNESS"] ? "☑" : "☐") + " DISP_BRIGHTNESS", 'B')
+      add_cmd((settings["FLIP_180"] ? "☑" : "☐") + "FLIP_180", 'F')
+      add_cmd((settings["MAX_BRIGHTNESS"] ? "☑" : "☐") + "DISP_BRIGHTNESS", 'B')
       add_cmd("")
       if (idd.startsWith("04E")) {
-        add_cmd((settings["DAC_8564"] ? "☑" : "☐") + " DAC_8564 / " + (!settings["DAC_8564"] ? "☑" : "☐") + " DAC_8565", 'D')
+        add_cmd((settings["DAC_8564"] ? "☑" : "☐") + "DAC_8564 / " + (!settings["DAC_8564"] ? "☑" : "☐") + "DAC_8565", 'D')
         add_cmd("")
-        add_cmd((!settings["SH1106_SSD1306"] ? "☑" : "☐") + "SH1106 / " + (settings["SH1106_SSD1306"] ? "☑" : "☐") + " SSD1306", '2')
-        add_cmd((!settings["DISPLAY_SPI1"] ? "☑" : "☐") + "DISPLAY_SPI / " + (settings["DISPLAY_SPI1"] ? "☑" : "☐") + " DISPLAY_SPI1", '1')
+        add_cmd((!settings["SH1106_SSD1306"] ? "☑" : "☐") + "SH1106 / " + (settings["SH1106_SSD1306"] ? "☑" : "☐") + "SSD1306", '2')
+        add_cmd((!settings["DISPLAY_SPI1"] ? "☑" : "☐") + "DISPLAY_SPI / " + (settings["DISPLAY_SPI1"] ? "☑" : "☐") + "DISPLAY_SPI1", '1')
       }
 
       try {
@@ -345,18 +358,35 @@ it is automatically recognized via <a href="https://studiocode.dev/check-webmidi
 
             let page = 0
             let offset = null
+            const engineOffset = 1024 * 1024;
             for (const entry of firmwarePages.entries()) {
-
-              const firmwareBin = entry[1]
-
-              if (offset == null)
+              if (offset == null) {
                 offset = entry[0]
-
+                break;
+              }
+            }
+            for (const entry of firmwarePages.entries()) {
               const i = entry[0] - offset
+
+              if (i < engineOffset)
+                continue; //Erstmal die Engines
 
               console.log("" + page + "/" + firmwarePages.size)
               progress(page, firmwarePages.size, info + ", writing page 0x" + (i).toString(16) + "...")
-              await sendFLASHDATA("0x" + (i).toString(16), firmwareBin);
+              await sendFLASHDATA( "0x" + (i).toString(16), entry[1]);
+
+              page++
+            }
+
+            for (const entry of firmwarePages.entries()) {
+              const i = entry[0] - offset
+
+              if (i >= engineOffset)
+                continue; //Jetzt die Firmware
+
+              console.log("" + page + "/" + firmwarePages.size)
+              progress(page, firmwarePages.size, info + ", writing page 0x" + (i).toString(16) + "...")
+              await sendFLASHDATA("0x" + (i).toString(16), entry[1]);
 
               page++
             }

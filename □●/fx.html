@@ -47,11 +47,10 @@
               <label class="col-0 form-label">FX-JSON</label>
               (<a href="https://github.com/eh2k/squares-and-circles/issues/58">Learn more</a>)
               <div class="row align-items-start">
-                <input type="text" class="col form-control" readonly id="spn"
-                  value="https://eh2k.github.io/□●/fv1-emu/factory.json"
+                <input type="text" class="col form-control" id="spn" value=""
                   placeholder="https://raw.githubusercontent.com/...">
                 <div class="col-0">&nbsp;</div>
-                <button id="load" class="col-0 btn-light btn">...</button>
+                <button id="load" class="col-0 btn-light btn">Load</button>
               </div>
             </div>
             <div class="container h-25">
@@ -94,8 +93,9 @@
         remoteReboot,
         formatSD,
         sendFLASHDATA,
+        crc32_from_uint8buffer,
         fileOpen,
-      } from "https://eh2k.spdns.org/eh2k_github_io/remote.js?9";
+      } from "https://eh2k.spdns.org/eh2k_github_io/remote.js?10";
 
       const BACKEND = "https://eh2k.spdns.org/squares-and-circles-fx"
 
@@ -108,72 +108,109 @@
 
       }
 
-      let bank = null
+      async function main() {
 
-      function loadBank(json) {
-        console.log(json)
-        const copy = document.getElementById("bank").children[0].cloneNode(true)
-        document.getElementById("bank").innerHTML = ""
-        bank = json.slice(0, 8);
-        for (const a of bank) {
-          const row = copy.cloneNode(true);
-          row.children[0].value = a.name;
-          row.children[0].setAttribute("readonly", "")
-          row.children[1].value = a.pot0;
-          row.children[1].setAttribute("readonly", "")
-          row.children[2].value = a.pot1;
-          row.children[2].setAttribute("readonly", "")
-          row.children[3].value = a.pot2;
-          row.children[3].setAttribute("readonly", "")
-          document.getElementById("bank").appendChild(row);
+        const urlParams = new URLSearchParams(window.location.search);
+        let spn_json = urlParams.get('json');
+        if (spn_json) {
+          document.getElementById("spn").value = spn_json;
+        } else {
+          document.location = window.location.search = `?json=https://github.com/eh2k/squares-and-circles/blob/main/lib/fv1/factory.json`
+          return
         }
-      }
 
-      const spn = document.getElementById("spn");
-      const json = await fetch(spn.value);
-      loadBank(await json.json())
+        let bank = null
 
-      const load = document.getElementById("load").onclick = async () => {
-        await fileOpen(".json", async (data, file) => {
-          loadBank(JSON.parse(new TextDecoder("utf-8").decode(data)))
-          spn.value = file
-        });
-      }
-
-      document.getElementById("compile").onclick = async () => {
-
-        if (bank != null) {
-          for (const y of bank) {
-
-            const name = y.name;
-            const a = y.pot0;
-            const b = y.pot1;
-            const c = y.pot2;
-            const spn_url = y.url
-
-            const url = BACKEND + `/${name}.bin?spn=${spn_url}&name=${name}&paramA=${a}&paramB=${b}&paramC=${c}&udd=${udd}&${+ new Date().getTime()}`;
-            console.log(url)
-
-            const app_bin = await fetch(url)
-            if (!app_bin.ok) {
-              document.getElementById("log").innerHTML = `${app_bin.status} ${await app_bin.text()}`;
-              return
-            }
-            const blob_name = name.replaceAll("/", "");
-            const blob = blob_name.split(".")[0].padStart(8, '_').substring(0, 8);
-            const data = await app_bin.arrayBuffer();
-            console.log(blob, blob.length, data)
-            await sendFLASHDATA(blob, data);
+        function loadBank(json) {
+          console.log(json)
+          const copy = document.getElementById("bank").children[0].cloneNode(true)
+          document.getElementById("bank").innerHTML = ""
+          bank = json.slice(0, 8);
+          for (const a of bank) {
+            const row = copy.cloneNode(true);
+            row.children[0].value = a.name;
+            row.children[0].setAttribute("readonly", "")
+            row.children[1].value = a.pot0;
+            row.children[1].setAttribute("readonly", "")
+            row.children[2].value = a.pot1;
+            row.children[2].setAttribute("readonly", "")
+            row.children[3].value = a.pot2;
+            row.children[3].setAttribute("readonly", "")
+            document.getElementById("bank").appendChild(row);
           }
+        }
 
+        const load = document.getElementById("load").onclick = async () => {
+          // await fileOpen(".json", async (data, file) => {
+          //   loadBank(JSON.parse(new TextDecoder("utf-8").decode(data)))
+          //   spn.value = file
+          // });
+          document.location = window.location.search = `?json=${document.getElementById("spn").value}`
+          return
+        }
+
+        try {
+          let link = document.getElementById("spn").value;
+          link = link.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+          const json = await fetch(link);
+          if (!json.ok)
+            throw `fetch err: ${json.status}`;
+          loadBank(await json.json())
+        } catch (e) {
+          document.getElementById("log").innerHTML += `${e}\n`;
+        }
+
+
+        document.getElementById("compile").onclick = async () => {
+
+          if (bank != null) {
+            for (const y of bank) {
+
+              const name = y.name;
+              const a = y.pot0;
+              const b = y.pot1;
+              const c = y.pot2;
+              const spn_url = y.url
+
+              const url = BACKEND + `/${name}.bin?spn=${spn_url}&name=${name}&paramA=${a}&paramB=${b}&paramC=${c}&udd=${udd}&json=${document.getElementById("spn").value}&${+ new Date().getTime()}`;
+              console.log(url)
+
+              const app_bin = await fetch(url)
+              if (!app_bin.ok) {
+                document.getElementById("log").innerHTML = `${app_bin.status} ${await app_bin.text()}`;
+                return
+              }
+              const blob_name = name.replaceAll("/", "");
+              const blob = blob_name.split(".")[0].padStart(8, '_').substring(0, 8);
+              const data = new Uint8Array(await app_bin.arrayBuffer());
+              const crc32 = crc32_from_uint8buffer(data);
+              function int32ToBytes(int) {
+                return [
+                  int & 0xff,
+                  (int >> 8) & 0xff,
+                  (int >> 16) & 0xff,
+                  (int >> 24) & 0xff
+                ]
+              }
+              var dataWithCrc32 = new ArrayBuffer(data.byteLength + 4);
+              new Uint8Array(dataWithCrc32).set(data, 0);
+              new Uint8Array(dataWithCrc32).set(int32ToBytes(crc32), data.byteLength);
+              console.log(blob, blob.length, data, dataWithCrc32.byteLength)
+              await sendFLASHDATA(blob, dataWithCrc32);
+            }
+
+            await remoteReboot();
+          }
+        }
+
+        document.getElementById("format").onclick = async () => {
+          await formatSD()
           await remoteReboot();
         }
+
       }
 
-      document.getElementById("format").onclick = async () => {
-        await formatSD()
-        await remoteReboot();
-      }
+      await main()
 
     </script>
 
