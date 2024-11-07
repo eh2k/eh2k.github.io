@@ -1,0 +1,117 @@
+<div class="sc-main">
+  <div>
+    <div class="label">First installation</div>
+    <h1 class="sc-title">Install the S&amp;C loader</h1>
+    <p class="mute" style="margin: 8px 0 0; max-width: 780px">A bare module gets the S&amp;C loader once, here in the
+      browser (Chrome or Edge). With the loader, or an older S&amp;C firmware, on the module: connect it and update on
+      <a href="#module">Module</a>.</p>
+  </div>
+
+  <div class="sc-steps" id="halfkay">
+    <section class="panel sc-step active" id="step_target">
+      <div class="num">1</div>
+      <div class="body">
+        <div class="title">Choose the module type</div>
+        <div class="mute" id="target_hint">The loader is built for each type of module.</div>
+        <label class="sc-field" style="align-self: flex-start; min-width: 220px">Module type
+          <select class="sc-select form-select" id="target_select">
+            <option value="OC_T40">O_C T4.0</option>
+            <option value="SC_DSM0">S&amp;C DSM0</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel sc-step" id="step_usb">
+      <div class="num">2</div>
+      <div class="body">
+        <div class="title">Connect the Teensy over USB</div>
+        <div class="mute">Directly to the computer, not over a passive hub.</div>
+      </div>
+    </section>
+
+    <section class="panel sc-step" id="step_reset">
+      <div class="num">3</div>
+      <div class="body">
+        <div class="title">Reset</div>
+        <div class="mute">Pick the Teensy in the browser's dialog. If no device is listed, the Teensy is likely in its
+          flashing mode already: go on with step 4.</div>
+        <div><button class="btn btn-accent" id="resetButton">Reset</button></div>
+      </div>
+    </section>
+
+    <section class="panel sc-step" id="step_flash">
+      <div class="num">4</div>
+      <div class="body">
+        <div class="title">Flash the loader</div>
+        <div class="mute">Pick "HID 16C0:0478" in the browser's dialog. If no device is listed, press the button on
+          the Teensy and click Flash again.</div>
+        <div class="warn small">Make sure the Teensy Loader is not running in the background.</div>
+        <div><button class="btn btn-accent" id="flashButton">Flash</button></div>
+      </div>
+    </section>
+
+    <section class="panel sc-step" id="step_dsm_rom" hidden>
+      <div class="num">2</div>
+      <div class="body">
+        <div class="title">Connect the Patch SM in its ROM bootloader</div>
+        <div class="mute">Hold the BOOT button of the Daisy Patch SM while you plug in the USB cable (plugged in
+          already: hold BOOT and press RESET). In a DSM0 the buttons are behind the panel: with the S&amp;C firmware
+          running and connected, the module goes there over USB.</div>
+        <div id="romDfuRow" hidden><button class="btn" id="romDfuButton">Into the ROM bootloader</button></div>
+      </div>
+    </section>
+
+    <section class="panel sc-step" id="step_dsm_boot" hidden>
+      <div class="num">3</div>
+      <div class="body">
+        <div class="title">Install the DSM0 bootloader</div>
+        <div class="mute">Pick "DFU in FS Mode" in the browser's dialog. It goes into the internal flash, in place of
+          a Daisy bootloader; the Patch SM then waits for the loader. Windows needs the WinUSB driver for this device
+          once (Zadig).</div>
+        <div><button class="btn btn-accent" id="bootButton">Install</button></div>
+      </div>
+    </section>
+
+    <section class="panel sc-step" id="step_dsm_flash" hidden>
+      <div class="num">4</div>
+      <div class="body">
+        <div class="title">Flash the S&amp;C loader</div>
+        <div class="mute">Pick "DSM0 Bootloader &lt;id&gt;" in the browser's dialog. While the bootloader waits, the MENU key
+          (the round key left of the display) and the Patch SM's LED breathe, they are on while it writes and blink on an
+          error. Later, with a module that does not start: hold MENU while it gets power, it then waits here again.</div>
+        <div><button class="btn btn-accent" id="flashDsmButton">Flash</button></div>
+      </div>
+    </section>
+
+    <details class="small mute" id="dsm_more" hidden>
+      <summary>Files of your own, command line</summary>
+      <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px">
+        <label class="sc-field" style="align-self: flex-start">DSM0 bootloader (.bin, step 3)
+          <input class="form-control" type="file" accept=".bin" id="bootFile"></label>
+        <label class="sc-field" style="align-self: flex-start">S&amp;C loader (.bin, step 4)
+          <input class="form-control" type="file" accept=".bin" id="dsmImageFile"></label>
+        <div>Without the browser: <code>dfu-util -a 0 -s 0x08000000:leave -D boot_SC_DSM0_&lt;sha&gt;.bin</code> in the
+          ROM bootloader. The loader then goes over the bootloader's HalfKay (step 4); an S&amp;C firmware that runs
+          takes it over its own DFU too (<code>dfu-util -a 0 -s 0x90040000:leave -D loader_SC_DSM0_&lt;sha&gt;.bin</code>).
+          Linux needs udev rules for 0483:df11 and the bootloader (1209:0001, its hidraw node too).</div>
+        <div><button class="btn btn-sm" id="downloadBootButton">Download the bootloader</button>
+          <button class="btn btn-sm" id="downloadBinButton">Download the loader</button>
+          <span class="warn small" id="downloadBinError" hidden></span></div>
+      </div>
+    </details>
+
+    <section class="panel sc-step" id="step_done">
+      <div class="num">5</div>
+      <div class="body">
+        <div class="title">Ready to update</div>
+        <div class="mute">The module starts with the splash screen and a blinking "Ready to Update". Connect it and
+          install firmware and apps on <a href="#module">Module</a>.</div>
+      </div>
+    </section>
+  </div>
+
+  <p class="small mute" style="margin: 0" id="withoutWebHID">Without WebHID: download the <a id="downloadLoader">S&amp;C loader hex file</a>
+    and flash it with the <a href="https://www.pjrc.com/teensy/loader.html">Teensy Loader</a>.
+    <span class="warn" id="downloadLoaderError" hidden></span></p>
+</div>

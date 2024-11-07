@@ -1,0 +1,89 @@
+<!-- the PRIVACY page (#privacy, linked at the bottom of the sidebar, index.html); what it says has to stay true to
+     what the app does: js/github.js previewFor() and worker/src/worker.js, worker/wrangler.toml (section 3),
+     js/github.js, js/appfiles.js, js/flasher.js, pages/module/notes.js, worker/deploy.sh (section 2), js/mcp.js,
+     js/mcpui.js, js/mcpflash.js, js/emulator.js, js/appbuild.js, worker/src/mcp.js, worker/schema.sql (section 4),
+     js/remoteBulk.js, pages/module/module.js, js/appbuild/worker.js (section 5). "Last updated": the date of each change of the text -->
+<div class="sc-main sc-privacy">
+  <section class="panel">
+    <h1 class="sc-title">Privacy notice</h1>
+    <p class="mute">Last updated: 24 November 2026</p>
+    <p>This web app connects to your Squares &amp; Circles module over USB in your browser, shows its firmware and apps
+      and updates them. It sets no cookies and uses no analytics service. The data of your module stay in your browser,
+      except those of the module register (section 3) and, if you connect an AI assistant, those it asks for (section
+      4).</p>
+  </section>
+
+  <section class="panel">
+    <h2>1. Contact</h2>
+    <p>Eduard Heidt<br />E-mail: <a href="mailto:eh2k@gmx.de">eh2k@gmx.de</a></p>
+  </section>
+
+  <section class="panel">
+    <h2>2. Hosting and content from GitHub</h2>
+    <p>The page is hosted by GitHub Pages (GitHub, Inc., USA); your browser also loads the firmware list, the apps,
+      the loaders and the release notes from GitHub. GitHub receives your IP address and the usual data of a web request
+      and logs them. A copy for trying out new versions, squares-and-circles.eh2k.workers.dev, is served by Cloudflare
+      (section 3), which then receives these data instead. The compiler and the apps' libraries the page loads when an
+      app is first built in your browser (about 35 MB, files of our GitHub repository) come through the same Cloudflare
+      service on both pages: Cloudflare receives that request, GitHub only Cloudflare's. A link you share from this page
+      (a patch, a calibration, an app's source code) carries that content in its address, which the host receives when
+      the link is opened. Other sites (ROM downloads, Teensy Loader) are only contacted when you click their links.
+      Legal basis: Art. 6(1)(f) GDPR, our legitimate interest in providing the page reliably. GitHub and Cloudflare are
+      certified under the EU-U.S. Data Privacy Framework.</p>
+  </section>
+
+  <section class="panel">
+    <h2>3. Module register</h2>
+    <p>Each time a module connects, the page sends its serial number, type and firmware version to our server
+      (squares-and-circles.eh2k.workers.dev). The server keeps per module: serial number, type, firmware version and
+      since when, first and last report and how many, whether it is an Insiders module that gets the next release before
+      it is published (and whether also our developer pages), and a note of ours. It answers whether the module gets
+      that release (and those pages). It also counts, without the serial number, how many modules are new, updated to
+      another firmware version or active per month, by type and firmware version; these counts are anonymous and kept.
+      It does not keep your IP address, where you are, your browser's details or the single reports; to find errors,
+      Cloudflare logs each request for us (your IP address and browser among its data) for at most 7 days. There is no
+      automated decision-making or profiling.</p>
+    <p>Purpose: to know how many modules use the firmware and which versions, to help with problems and to give Insiders
+      modules the release under test. An entry is deleted 24 months after its last report (an Insiders module's when it
+      is no longer one), on request at once. Processor: Cloudflare, Inc., 101 Townsend St., San Francisco, CA 94107,
+      USA, under its Data Processing Addendum. Legal basis: Art. 6(1)(f) GDPR, our legitimate interest in these
+      purposes; the page reads these data from your module anyway, for the update you asked for (§ 25(2) No. 2 TDDDG).
+      The report is not required by law or contract. You can object to it by an e-mail to the address in section 1 (Art.
+      21 GDPR); we then delete the entry and keep only the serial number, marked so that its reports are no longer
+      stored.</p>
+  </section>
+
+  <section class="panel">
+    <h2>4. AI assistant (optional)</h2>
+    <p>While Let's vibe is open (and its MCP on, which it is when it opens), the page connects your own AI assistant (an
+      MCP client such as Claude or Copilot) to the page's emulator. While it is connected, the page holds a connection
+      to our server (squares-and-circles.eh2k.workers.dev), and the assistant's requests and the page's answers pass
+      through it: the apps it plays in the emulator (also as source code, which your browser compiles itself) and what
+      the emulator shows and plays (its display, levels, parameters). Your module is not part of it: [Run on module] and [Install on module] put the app shown onto your
+      module only when you click them, directly over USB. The server does not keep these data (Cloudflare logs the
+      requests as in section 3). It keeps, without the address or any content, per day how often each of the assistant's
+      tools was called and whether it worked, and the notes an assistant sends when the tools could not answer or do
+      what you asked (in the assistant's own words, at most 500 characters); we use them to see what the tools are used
+      for and what is missing, and delete them after 12 months. The address stays the same in this browser (derived from
+      a random key the page keeps in your browser, section 5), it works only while the page is connected, and whoever
+      has it can reach the emulator of your page then. What your assistant does with the data is up to its provider and
+      your agreement with them. Processor: Cloudflare (section 3). Legal basis: Art. 6(1)(b) GDPR, you ask for it; for
+      the counts and notes Art. 6(1)(f) GDPR, our legitimate interest in improving the tools.</p>
+  </section>
+
+  <section class="panel">
+    <h2>5. Stored in your browser</h2>
+    <p>The type of module you chose last, the serial number of the module connected last (to find it again), that you
+      have seen the note on the module register and, if you use the AI assistant, the random key of its address and the
+      app it played last in Let's vibe (local storage), and the compiler the page loads when an app is built here for
+      the first time (section 2; cache storage). You can delete them with your browser's site data. Legal basis:
+      § 25(2) No. 2 TDDDG.</p>
+  </section>
+
+  <section class="panel">
+    <h2>6. Your rights</h2>
+    <p>You have the right to access, rectification, erasure, restriction of processing, data portability and objection
+      (Art. 15–18, 20, 21 GDPR): write an e-mail to the address in section 1. You can also lodge a complaint with a
+      supervisory authority (Art. 77 GDPR), in particular in the EU member state where you live or work.</p>
+  </section>
+</div>
