@@ -1,0 +1,491 @@
+{
+  "TR707": {
+    "machine": "Roland TR-707",
+    "app": "app/DRUMKITS/TR-707/README.md",
+    "page": "https://dbwbp.com/index.php/9-misc/37-synth-eprom-dumps",
+    "roms": [
+      {
+        "blob": "707_IC34",
+        "file": "tr707/707_IC34.bin",
+        "size": 32768,
+        "crc32": "a196489b",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Roland%20TR-707%20sound%20ROMs.zip",
+            "entry": "IC34_TR707_SNDROM.bin"
+          }
+        ]
+      },
+      {
+        "blob": "707_IC35",
+        "file": "tr707/707_IC35.bin",
+        "size": 32768,
+        "crc32": "b05302e5",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Roland%20TR-707%20sound%20ROMs.zip",
+            "entry": "IC35_TR707_SNDROM.bin"
+          }
+        ]
+      },
+      {
+        "blob": "707_IC19",
+        "file": "tr707/707_IC19_CRASH.bin",
+        "size": 32768,
+        "crc32": "b0bea07f",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Roland%20TR-707%20sound%20ROMs.zip",
+            "entry": "IC19_CRASH_CYMBAL.bin"
+          }
+        ]
+      },
+      {
+        "blob": "707_IC22",
+        "file": "tr707/707_IC22_RIDE.bin",
+        "size": 32768,
+        "crc32": "9411943a",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Roland%20TR-707%20sound%20ROMs.zip",
+            "entry": "IC22_RIDE_CYMBAL.bin"
+          }
+        ]
+      }
+    ]
+  },
+  "TR909": {
+    "machine": "Roland TR-909 (cymbal and hi-hat EPROMs of the 9090 by Trevor Page)",
+    "app": "app/DRUMS/TR909-HiHat/README.md",
+    "page": "http://www.synthdiy.com/show/?id=452",
+    "roms": [
+      {
+        "blob": "909_HIGH",
+        "file": "tr909/909_HIGH.bin",
+        "size": 32768,
+        "crc32": "2aaae11b",
+        "download": [
+          {
+            "url": "http://www.synthdiy.com/files/2006/eproms_9090.zip",
+            "entry": "HiHats.bin"
+          }
+        ]
+      },
+      {
+        "blob": "909_RIDE",
+        "file": "tr909/909_RIDE.bin",
+        "size": 32768,
+        "crc32": "01a9b435",
+        "download": [
+          {
+            "url": "http://www.synthdiy.com/files/2006/eproms_9090.zip",
+            "entry": "Ride.bin"
+          }
+        ]
+      },
+      {
+        "blob": "909_CRASH",
+        "file": "tr909/909_CRASH.bin",
+        "size": 32768,
+        "crc32": "dc61cf1a",
+        "download": [
+          {
+            "url": "http://www.synthdiy.com/files/2006/eproms_9090.zip",
+            "entry": "Crash.bin"
+          }
+        ]
+      }
+    ]
+  },
+  "RZ-1": {
+    "machine": "Casio RZ-1",
+    "app": "app/DRUMKITS/RZ-1/README.md",
+    "page": "https://dbwbp.com/index.php/9-misc/37-synth-eprom-dumps",
+    "roms": [
+      {
+        "blob": "RZ1_ROMA",
+        "file": "rz-1/RZ1_ROMA.bin",
+        "size": 32768,
+        "crc32": "c643ff24",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Casio%20RZ-1%20Stock%20PCM%20ROMs.zip",
+            "entry": "SOUND ROM A.bin"
+          }
+        ]
+      },
+      {
+        "blob": "RZ1_ROMB",
+        "file": "rz-1/RZ1_ROMB.bin",
+        "size": 32768,
+        "crc32": "ee5b703e",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Casio%20RZ-1%20Stock%20PCM%20ROMs.zip",
+            "entry": "SOUND ROM B.bin"
+          }
+        ]
+      }
+    ]
+  },
+  "DMX": {
+    "machine": "Oberheim DMX",
+    "app": "app/DRUMKITS/DMX/README.md",
+    "page": "https://dbwbp.com/index.php/9-misc/37-synth-eprom-dumps",
+    "terms": "\"You may download these files for your own personal use\"",
+    "terms_url": "https://www.electrongate.com/dmxfiles/eproms.html",
+    "roms": [
+      {
+        "blob": "DMXBASS",
+        "file": "dmx/21KICK.BIN",
+        "size": 4096,
+        "crc32": "3ab63275",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Stock%20DMX%20Sounds%20EPROM.zip",
+            "entry": "21KICK.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "DMXSNARE",
+        "file": "dmx/SNARE6.BIN",
+        "size": 4096,
+        "crc32": "eca57ad7",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Stock%20DMX%20Sounds%20EPROM.zip",
+            "entry": "SNARE6.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "DMXHIHAT",
+        "file": "dmx/HAT1A.BIN",
+        "size": 4096,
+        "crc32": "36e934f9",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Stock%20DMX%20Sounds%20EPROM.zip",
+            "entry": "HAT1A.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "DMXTOM1",
+        "file": "dmx/STOM5.BIN",
+        "size": 4096,
+        "crc32": "e8022d72",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Stock%20DMX%20Sounds%20EPROM.zip",
+            "entry": "STOM5.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "DMXTOM2",
+        "file": "dmx/SFLTOM2.BIN",
+        "size": 4096,
+        "crc32": "f5b48db0",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Stock%20DMX%20Sounds%20EPROM.zip",
+            "entry": "SFLTOM2.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "DMXPERC1",
+        "file": "dmx/STIK.BIN",
+        "size": 4096,
+        "crc32": "61af39e3",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Stock%20DMX%20Sounds%20EPROM.zip",
+            "entry": "STIK.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "DMXPERC2",
+        "file": "dmx/SHAKE6.BIN",
+        "size": 4096,
+        "crc32": "00549f07",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Stock%20DMX%20Sounds%20EPROM.zip",
+            "entry": "SHAKE6.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "DMXCYMB",
+        "file": "dmx/CYMBAL.BIN",
+        "size": 32768,
+        "crc32": "6d624d1f",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Standard%20DMX%20Cymbals%20Sound%20EPROM.zip",
+            "entry": "CRASH1.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Standard%20DMX%20Cymbals%20Sound%20EPROM.zip",
+            "entry": "CRASH2.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Standard%20DMX%20Cymbals%20Sound%20EPROM.zip",
+            "entry": "CRASH3.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Standard%20DMX%20Cymbals%20Sound%20EPROM.zip",
+            "entry": "CRASH4.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Standard%20DMX%20Cymbals%20Sound%20EPROM.zip",
+            "entry": "RIDE2A1.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Standard%20DMX%20Cymbals%20Sound%20EPROM.zip",
+            "entry": "RIDE2A2.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Standard%20DMX%20Cymbals%20Sound%20EPROM.zip",
+            "entry": "RIDE2A3.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Standard%20DMX%20Cymbals%20Sound%20EPROM.zip",
+            "entry": "RIDE2A4.BIN"
+          }
+        ]
+      }
+    ]
+  },
+  "Linn": {
+    "machine": "LinnDrum (bass, claps and cabasa from the Linn 9000, sidestick = DMX STIK)",
+    "app": "app/DRUMKITS/Linn/README.md",
+    "page": "https://dbwbp.com/index.php/9-misc/37-synth-eprom-dumps",
+    "roms": [
+      {
+        "blob": "LINNBASS",
+        "file": "linn9k/bass01.bin",
+        "size": 8192,
+        "crc32": "45151647",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linn%209000%20%20roms%201.zip",
+            "entry": "bass01.bin"
+          }
+        ]
+      },
+      {
+        "blob": "LINNSNAR",
+        "file": "lm2/SNARE9.BIN",
+        "size": 4096,
+        "crc32": "83478583",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_SNARE9.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "LINNSSTK",
+        "file": "dmx/STIK.BIN",
+        "size": 4096,
+        "crc32": "61af39e3",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_SIDESTICK1.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "LINNCLAP",
+        "file": "linn9k/clap0125.bin",
+        "size": 8192,
+        "crc32": "4e73b5f9",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linn%209000%20%20roms%201.zip",
+            "entry": "clap0125.bin"
+          }
+        ]
+      },
+      {
+        "blob": "LINNTAMB",
+        "file": "lm2/TAMB1.BIN",
+        "size": 4096,
+        "crc32": "0309eba3",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_TAMB1.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "LINNCABA",
+        "file": "linn9k/caba0125.bin",
+        "size": 8192,
+        "crc32": "3214fa50",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linn%209000%20%20roms%201.zip",
+            "entry": "caba0125.bin"
+          }
+        ]
+      },
+      {
+        "blob": "LINNCOWB",
+        "file": "lm2/COWBELL1.BIN",
+        "size": 4096,
+        "crc32": "819d4a2c",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_COWBELL1.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "LINNHAT",
+        "file": "lm2/HAT1.BIN",
+        "size": 16384,
+        "crc32": "c312188c",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_HAT1A.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_HAT1B.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_HAT1C.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_HAT1D.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "LINNTOM",
+        "file": "lm2/TOM6.BIN",
+        "size": 8192,
+        "crc32": "1fa0d8ef",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_TOM6A.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_TOM6B.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "LINNCNGA",
+        "file": "lm2/CONGA1.BIN",
+        "size": 8192,
+        "crc32": "38157b55",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_CONGA1A.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_CONGA1B.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "LINNRIDE",
+        "file": "lm2/RIDE1.BIN",
+        "size": 32768,
+        "crc32": "a98d7a71",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_RIDE1A.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_RIDE1B.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_RIDE1C.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_RIDE1D.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_RIDE1E.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_RIDE1F.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_RIDE1G.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_RIDE1H.BIN"
+          }
+        ]
+      },
+      {
+        "blob": "LINNCRSH",
+        "file": "lm2/CRASH1.BIN",
+        "size": 32768,
+        "crc32": "ad8f895d",
+        "download": [
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_CRASH1A.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_CRASH1B.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_CRASH1C.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_CRASH1D.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_CRASH1E.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_CRASH1F.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_CRASH1G.BIN"
+          },
+          {
+            "url": "https://dbwbp.com/synthbin/Linndrum%20Factory%20ROMs.zip",
+            "entry": "Linndrum_CRASH1H.BIN"
+          }
+        ]
+      }
+    ]
+  }
+}

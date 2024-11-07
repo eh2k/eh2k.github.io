@@ -1,0 +1,72 @@
+<div class="sc-main">
+  <h1 class="sc-title">Module</h1>
+
+  <!-- without a module (the page the web app opens with): connect one, or the engines of app/ in the emulator -->
+  <section class="panel sc-hero" id="module_offline" hidden>
+    <div class="shapes" aria-hidden="true"><span class="sq"></span><span class="ci"></span></div>
+    <h2 class="sc-hero-title">Connect your module</h2>
+    <p class="mute">Plug the O_C or DSM in over USB and connect it. Its type, firmware and installed apps are read from
+      the module. Its flash map opens each engine in the emulator.</p>
+    <div class="sc-cmds sc-hero-cmds">
+      <button class="btn btn-accent" id="module_connect">Connect module</button>
+      <a class="btn" href="#emulator" title="All engines in the browser: display, knobs, sound, MIDI in">Try the emulator</a>
+    </div>
+    <p class="small mute">Chrome or Edge (WebUSB, WebHID, WebMIDI)</p>
+    <div class="more">
+      <span>A bare Teensy without the S&amp;C loader?</span>
+      <a href="#loader">Install the loader →</a>
+    </div>
+  </section>
+
+  <!-- data-module: of a connected module only, hidden without one (apps.js initApps) -->
+  <div class="sc-module-grid" data-module hidden>
+    <section class="panel">
+      <div class="panel-label">Firmware</div>
+      <div>
+        <div class="small mute">installed</div>
+        <div class="value" id="currentVersion">–</div>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap">
+        <label class="sc-field" style="flex: 1 1 220px">update to
+          <select class="form-select" id="firmwares"></select>
+        </label>
+        <!-- the CHANGELOG.txt of the version chosen in "update to" in a popup (index.html #release_notes, notes.js) -->
+        <button class="btn" id="notesButton" title="What is new in the version chosen in &quot;update to&quot;">Release notes</button>
+        <button class="btn btn-accent" id="upgradeButton">Flash/Update</button>
+      </div>
+      <div class="small mute">Writes the firmware and all engines of the release; ROMs, samples and patches stay. Only
+        the pages that differ are written and checked afterwards; after a stop, the next click writes the rest.</div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-label">Settings</div>
+      <div id="commands"></div>
+    </section>
+  </div>
+
+  <div class="sc-grid" data-module hidden>
+    <section class="panel">
+      <div class="panel-label">Flash memory</div>
+      <!-- a click on an engine's blob: the engine in the emulator; on a patch: the patch view (apps.js openBlob) -->
+      <svg id="svgCanvas" aria-label="Flash memory map"></svg>
+      <div id="tooltip" class="xtooltip" style="display: none"></div>
+      <div id="summaryText" class="small mute"></div>
+      <!-- [Update all] only with ?debug (apps.js initApps): the changed and new engines that fit, in one go -->
+      <div class="sc-cmds" id="flash_all_box" hidden>
+        <button class="btn btn-accent" id="flash_all" disabled>Update all</button>
+        <span class="mute small">Changed and new engines that fit; the module restarts afterwards.</span>
+      </div>
+      <div id="index_in_chain" class="cmd-note" hidden></div>
+      <!-- the saved patches of the module, each with its engines and [View] (apps.js showPatches, js/patchview.js) -->
+      <div class="sc-patches" id="patches" hidden>
+        <div class="label">Patches</div>
+        <div id="patch_list"></div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-label">Extras</div>
+      <div id="extras"></div>
+    </section>
+  </div>
+
+</div>
