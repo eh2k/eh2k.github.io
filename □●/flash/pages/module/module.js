@@ -1,0 +1,1 @@
+import{remoteUsbInit,remoteUsbReceive}from"../../js/remoteBulk.js";import{initFirmware}from"./firmware.js";import{flashUse}from"../library/apps.js";async function htmlInit(e){if(null!=e){await initFirmware(e).catch(e=>console.error(e));try{window.scHeader?.(flashUse(JSON.parse(await remoteUsbReceive("blobs"))))}catch(e){console.error(e)}}}remoteUsbInit(null,htmlInit);

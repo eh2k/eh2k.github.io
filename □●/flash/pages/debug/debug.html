@@ -1,0 +1,80 @@
+<div class="sc-main">
+  <div class="dbg-head">
+    <h1 class="sc-title">Debug</h1>
+    <span id="live_status" class="sc-status">not connected</span>
+    <button class="btn" id="live_toggle" disabled>Pause</button>
+  </div>
+  <div id="live_note" class="cmd-note" hidden></div>
+
+  <div class="dbg-grid">
+    <section class="panel">
+      <div class="panel-label">System</div>
+      <div class="dbg-kv-cols">
+        <dl class="dbg-kv" id="sys_kv"></dl>
+        <dl class="dbg-kv" id="sys_info"></dl>
+      </div>
+      <div class="small mute">heap in use, last minute</div>
+      <canvas class="dbg-chart small-chart" id="heap_chart" aria-label="Heap in use over the last minute"></canvas>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <span class="panel-label">CPU load</span>
+        <span class="small mute" id="load_sub"></span>
+      </div>
+      <div class="dbg-big">
+        <span class="value" id="load_all">–</span>
+        <span class="small mute">peak <span class="mono" id="load_peak">–</span></span>
+      </div>
+      <canvas class="dbg-chart" id="load_chart" aria-label="CPU load over the last minute"></canvas>
+      <div class="dbg-tracks" id="load_tracks"></div>
+      <dl class="dbg-kv" id="load_kv"></dl>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <span class="panel-label">Inputs</span>
+        <span class="small mute">noise = min/max span</span>
+      </div>
+      <div class="dbg-trigs" id="trigs"></div>
+      <div class="dbg-cvs" id="cvs"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <span class="panel-label">Output levels</span>
+        <span class="small mute">peak dBFS, 0 dB = ±1.0 of the engine</span>
+      </div>
+      <div class="dbg-levels" id="levels"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <span><span class="panel-label">MIDI in</span>&nbsp; <span class="small mute" id="midi_sub"></span></span>
+        <button class="btn dbg-small-btn" id="midi_clear">Clear</button>
+      </div>
+      <div class="dbg-midi" id="midi_log"><div class="mute small">No messages yet.</div></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <span class="panel-label">Last crash</span>
+        <span>
+          <button class="btn dbg-small-btn" id="crash_refresh" disabled>Refresh</button>
+          <button class="btn dbg-small-btn" id="crash_clear" disabled>Clear</button>
+        </span>
+      </div>
+      <div id="crash"><div class="mute small">–</div></div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <div class="panel-label">Tools</div>
+    <div id="tools_cmds" class="sc-cmds"></div>
+  </section>
+
+  <details class="sc-console" open>
+    <summary class="panel-label">Console</summary>
+    <textarea rows="16" id="log" spellcheck="false" aria-label="Console"></textarea>
+  </details>
+</div>
