@@ -1,478 +1,419 @@
 <!doctype html>
-<html lang="en">
-<style>
-  .card-img-top {
-    width: 100%;
-    height: 60vh;
-    object-fit: fill;
-  }
-</style>
+<html lang="en" data-bs-core="modern" data-bs-theme="dark">
 
 <head>
-  <meta charset="utf-8">
-  <!-- Meta tags -->
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-  <meta name="viewport" content="width=device-width" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>□● Squares &amp; Circles</title>
 
-  <link href="../halfmoon-variables.min.css" rel="stylesheet" />
-
-  <script src="../webmidi.iife.v3.1.8.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/webmidi@3.1.11/dist/iife/webmidi.iife.min.js"></script> -->
-
+  <link href="./vendor/halfmoon-2.0.2.min.css" rel="stylesheet" />
+  <link href="./vendor/fonts.css" rel="stylesheet" />
+  <link href="./theme.css" rel="stylesheet" />
+  <script src="./js/index.js" type="module"></script>
 </head>
 
-<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true"
-  data-sidebar-shortcut-enabled="true" data-set-preferred-mode-onload="true">
+<body>
 
-
-  <div class="page-wrapper with-navbar" data-sidebar-type="overlayed-sm-and-down">
-
-    <div class="sticky-alerts"></div>
-    <!-- Navbar -->
-    <nav class="navbar">
-      <!-- <div class="navbar-content">
-        <button class="btn btn-action" type="button">
-          <i class="fa fa-bars" aria-hidden="true"></i>
-          <span class="sr-only">Toggle sidebar</span> 
-        </button>
-      </div> -->
-      <a href="." class="navbar-brand">
-        <p>□● WebFlasher</p>
+  <div class="sc-shell">
+    <!-- the module: picture, name, connection, firmware, flash (index.js keeps it up to date); the pages -->
+    <aside class="sc-side">
+      <a class="sc-brand" href="#module">
+        <span class="sc-logo" aria-hidden="true"><span class="sq"></span><span class="ci"></span></span>
+        <span>Squares &amp; Circles</span>
+        <span class="sc-preview" id="preview_badge" title="?preview: the next release (refs/preview/main), not main" hidden>preview</span>
       </a>
-      <div class="navbar-content ml-auto">
-        <select class="form-control" id="firmwares" style="align-self: center; width: auto"></select>
-        <select class="form-control" id="midi_targets" style="align-self: center; width: auto"></select>
-      </div>
-    </nav>
 
-    <div class="content-wrapper">
-      <div class="container-fluid">
-        <div class="row mx-5">
-          <div class="card bg-transparent m-5 d-none d-md-block" style="padding: 0; writing-mode: vertical-lr">
-            <img hidden id="img_module" src="u_oc.png" class="card-img-top" style="height: 580px;" />
-          </div>
-          <div class="card m-5">
-            <h6 id="firmware" class="content-title my-5">FIRMWARE</a></h6>
-            <h6 id="loader" class="content-title my-5" hidden>Stage 1: Flashing Squares&Circles Loader</h6>
-            <ol id="halfkay">
-              <li>Connect the Teensy4 to your PC using a USB cable.</li>
-              <!-- <li>Press the Button on the Teensy.
-                <ul style="list-style: initial;">
-                  <sup>
-                    Make shure the teensy-loader is not running in background.
-                  </sup>
-                </ul> -->
-              <li>Click [Reset] - connect to USB device listed in the browser-popup.
-                <ul style="list-style: initial;">
-                  <li><button class="btn btn-sm bg-light text-dark" id="resetButton">Reset</button></li>
-                  <li>If no USB device is listet, Teensy is likely in the flashing mode, follow step 3</li>
-                </ul>
-              </li>
-              <li>Click [Flash] - connect to 'HID 16C0:0478' device listed in the browser-popup.
-                <ul style="list-style: initial;">
-                  <li>
-                    <div class="d-flex flex-row">
-                      <button class="btn btn-sm bg-light text-dark" id="flashButton">Flash</button>
-                    </div>
-                  </li>
-                  <li>If no USB device is listet, press the Button on the teensy.</li>
-                </ul>
-              </li>
-              <sup style="margin:0px">
-                Tested with Chrome - Ensure the TeensyLoader is not running in background.
-              </sup>
-            </ol>
-          </div>
-
-          <div class="card m-5" id="upgrade" hidden>
-            <button class="btn bg-light text-dark" id="upgradeButton">Flash/Update</button>
-            <div id="transmitInfo"></div>
-          </div>
-
-          <div id="setup" class="col card m-5 " hidden>
-            <commands id="commands" />
-          </div>
-
-          <div id="engines0" class="col card m-5 " hidden>
-            <h4 class="content-title my-5">ENGINES</h4>
-            <commands id="engines" />
+      <div class="sc-card">
+        <div class="sc-device">
+          <div class="sc-thumb"><img id="img_module" src="img/u_oc.png" alt="" hidden /></div>
+          <div class="sc-device-text">
+            <span class="sc-device-name" id="device_name">No module</span>
+            <span class="sc-status" id="device_status">not connected</span>
           </div>
         </div>
-        <div class="row mx-5">
-          <div class="col card m-5">
-            <div id="log2"></div>
+        <div class="sc-device-sub"><span id="connected"></span><span id="device_fw"></span></div>
+        <div class="sc-meter-box" id="device_meter" hidden>
+          <div class="sc-meter-head"><span>App flash</span><span class="mono" id="device_meter_text"></span></div>
+          <div class="sc-meter"><div id="device_meter_bar" style="width: 0"></div></div>
+        </div>
+        <button class="btn" id="connect">connect</button>
+      </div>
+
+      <nav class="sc-nav" aria-label="Pages">
+        <a href="#module" data-tab="module"><span>Module</span><span class="count" id="nav_updates"></span></a>
+        <a href="#live" data-tab="live" id="nav_live" hidden><span>Live</span></a>
+        <a href="#loader" data-tab="loader"><span>Install loader</span></a>
+        <a href="#debug" data-tab="debug" id="nav_debug" hidden><span>Debug</span></a>
+      </nav>
+    </aside>
+
+    <main id="app" class="sc-content"></main>
+
+    <!-- the Emulator page (#emulator, under Module: no entry of its own in the sidebar): an app in the emulator, its display, a trigger on T1, its parameters as knobs,
+         sound, MIDI in (js/emulator.js). Beside #app, not in it: it keeps running while the router (renderRoute) loads
+         the other pages into #app and shows the one or the other; the flash map of the module page, [Try the emulator]
+         without a module, [FV1emu] and [DXFM] open it -->
+    <main id="emu_page" class="sc-content" hidden>
+      <div class="sc-main">
+        <div>
+          <a class="sc-back" href="#module">&larr; Module</a>
+          <h1 class="sc-title" id="emu_title">Emulator</h1>
+        </div>
+        <section class="panel" id="emulator">
+          <div class="emu-head">
+            <!-- another engine in the emulator at once (the engines of app/), from the list or the one before/after it
+                 (js/emulator.js) -->
+            <div class="emu-app" id="emu_app_box" hidden>
+              <button class="btn" id="emu_prev" title="The engine before this one in the list" aria-label="Previous engine">&lsaquo;</button>
+              <select class="form-select" id="emu_app" aria-label="The engine in the emulator"></select>
+              <button class="btn" id="emu_next" title="The engine after this one in the list" aria-label="Next engine">&rsaquo;</button>
+            </div>
+            <!-- right in the head: MIDI in (the inputs once on), sound on/off; what they say: their tooltips -->
+            <div class="emu-tools emu-midi">
+              <button class="btn" id="emu_midi_btn" hidden><span class="emu-btn-text">MIDI in</span></button>
+              <span class="emu-midi-icon" id="emu_midi_icon" hidden></span>
+              <select class="form-select" id="emu_midi" aria-label="MIDI input" hidden></select>
+              <button class="btn" id="emu_sound" aria-pressed="true" hidden>Sound on</button>
+            </div>
+          </div>
+          <!-- the module (display; under it the trigger and, while loading or after an error, what happened) left, its
+               parameters right; one below the other when narrow -->
+          <div class="sc-emu">
+            <div class="emu-col">
+              <div class="sc-oled"><canvas id="emu_display" width="128" height="64" aria-label="The display of the emulated module"></canvas></div>
+              <div class="emu-under">
+                <div class="sc-cmds" id="emu_keys"></div>
+                <div class="small mute emu-status" id="emu_status"></div>
+              </div>
+              <!-- a drum kit in multi-trig mode: a button for each instrument (js/emulator.js kitButtons()) -->
+              <div class="emu-kit" id="emu_kit" role="group" aria-label="The instruments of the kit, each its own trigger" hidden></div>
+              <!-- the outputs of the engine, CV (LFO, envelope, V/OCT, gates) and audio: a lane each, its voltage and the
+                   last 2 s (js/scope.js); hidden for an engine without -->
+              <div class="emu-scope" id="emu_scope" hidden title="The outputs of the engine, the last 2 seconds: CV with its voltage now, audio (±1 = ±5 V) with its peak">
+                <canvas id="emu_scope_canvas" role="img" aria-label="The voltages at the outputs of the engine"></canvas>
+              </div>
+            </div>
+            <div class="emu-col">
+              <div class="sc-knobs" id="emu_params" role="group" aria-label="The parameters of the engine shown"></div>
+            </div>
+            <!-- the FV1emu dialog (js/fv1emu.js, [FV1emu] of the module page): programs from .spn or .bin files as a bank
+                 (FX chooses), a row each with its name and pot names, the bank onto the module -->
+            <div class="emu-bank" id="emu_fv1" hidden>
+              <div class="sc-cmds">
+                <button class="btn" id="fv1_load" title="FV-1 programs, one file or several, as a bank (FX chooses): SpinASM sources (.spn) or EEPROM images (.bin, 512 bytes a program)">Load .spn / .bin</button>
+                <button class="btn btn-accent" id="fv1_flash">Flash to module</button>
+                <span class="small mute" id="fv1_status"></span>
+              </div>
+              <div class="bank-scroll">
+                <table class="bank-table" id="fv1_table">
+                  <thead><tr><th>FX</th><th>Name</th><th>A</th><th>B</th><th>C</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+            <!-- the DXFM dialog (js/dxfm.js, [DXFM] of the module page): the voices of DX7 SysEx files as the bank of
+                 SYNTH/DxFM (32 voices), a row each with its name, the bank onto the module as DXFMSYX0 -->
+            <div class="emu-bank" id="emu_dxfm" hidden>
+              <div class="sc-cmds">
+                <button class="btn" id="dxfm_load" title="DX7 voices, one file or several, as the bank of SYNTH/DxFM (at most 32): .syx files with 32-voice bulk dumps (also several in one file) or single voices">Load .syx</button>
+                <button class="btn btn-accent" id="dxfm_flash">Flash to module</button>
+                <span class="small mute" id="dxfm_status"></span>
+              </div>
+              <div class="bank-scroll">
+                <table class="bank-table" id="dxfm_table">
+                  <thead><tr><th>Voice</th><th>Name</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="emu-foot">
+            <!-- the engine's README.md on GitHub (js/emulator.js, appfiles.js appReadme()), hidden when it has none -->
+            <a class="btn" id="emu_readme" target="_blank" rel="noopener" title="The description of this engine on GitHub" hidden>README</a>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div>
+    <div class="modal fade" id="flashing" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title" id="modal-title-1">
+              <div id="log2"></div>
+            </h1>
+          </div>
+          <div class="modal-body">
             <progress id="progress" value="0" max="100" style="width: 100%;" hidden></progress>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- <nav class="navbar navbar-fixed-bottom">
-    </nav> -->
+    <div class="modal fade" id="modalConnect" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title">□●</h1>
+          </div>
+          <!-- the text and the buttons from remoteBulk.js showNoModule() -->
+          <div class="modal-body">
+            <p id="connect_hint" style="margin: 0">No S&amp;C module connected.</p>
+            <p class="small mute mono" id="connect_error" style="margin: 8px 0 0" hidden></p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-bs-dismiss="modal">Close</button>
+            <a href="#loader" class="btn" id="connect_loader">Install loader</a>
+            <button class="btn btn-accent" id="connectButton">Retry</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- a patch of the module: its tracks with their engines, the wires to the module's inputs and outputs and from
+         track to track, the parameters of each engine (js/patchview.js) -->
+    <div class="modal fade" id="patch_view" tabindex="-1" aria-labelledby="pv_title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+          <div class="modal-header pv-head">
+            <h1 class="modal-title" id="pv_title">Patch</h1>
+            <select class="form-select" id="pv_slot" aria-label="The patch shown"></select>
+          </div>
+          <div class="modal-body sc-pv">
+            <div class="small mute" id="pv_status"></div>
+            <div class="small mono mute" id="pv_global"></div>
+            <div class="pv-diagram" id="pv_diagram"></div>
+            <div class="pv-tracks" id="pv_tracks"></div>
+          </div>
+          <div class="modal-footer pv-foot">
+            <span class="small mute" id="pv_note"></span>
+            <span class="small mute" id="pv_share_info"></span>
+            <!-- a shared patch (?patch=) onto the connected module as Patch-<n> (js/patchview.js saveToModule()) -->
+            <span class="pv-save" id="pv_save_row" hidden>
+              <select class="form-select form-select-sm" id="pv_save_slot" aria-label="The slot on the module"></select>
+              <button class="btn" id="pv_save" title="Saves the shared patch into this slot of the module, LOAD on the module plays it">Save to module</button>
+            </span>
+            <button class="btn" id="pv_syx_load" title="Shows a patch saved as a .syx file">Load .syx</button>
+            <button class="btn" id="pv_syx" hidden title="This patch as a SysEx file: sent to the module over MIDI, it plays it (as LOAD)">Download .syx</button>
+            <button class="btn" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- the release notes of the firmware chosen on the module page: CHANGELOG.txt, what the installed one does not
+         have (pages/module/notes.js, opened by [Release notes] there) -->
+    <div class="modal fade" id="release_notes" tabindex="-1" aria-labelledby="notes_title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+          <div class="modal-header pv-head">
+            <h1 class="modal-title" id="notes_title">Release notes</h1>
+            <span class="small mute" id="notes_info"></span>
+          </div>
+          <div class="modal-body sc-notes" id="notes"></div>
+          <div class="modal-footer pv-foot">
+            <a id="notes_link" class="btn" target="_blank" rel="noopener">CHANGELOG.txt on GitHub</a>
+            <button class="btn" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- the calibration of a module: CV inputs and outputs, flags, its device id; shared as ?calib= (js/calibview.js) -->
+    <div class="modal fade" id="calib_view" tabindex="-1" aria-labelledby="cv_title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header pv-head">
+            <h1 class="modal-title" id="cv_title">Calibration</h1>
+            <span class="small mute mono" id="cv_sub"></span>
+          </div>
+          <div class="modal-body sc-pv">
+            <div class="small mute" id="cv_status"></div>
+            <div id="cv_body"></div>
+            <div class="small mute" id="cv_note"></div>
+          </div>
+          <div class="modal-footer pv-foot">
+            <span class="small mute" id="cv_share_info"></span>
+            <button class="btn" id="cv_connect" hidden title="Connects the module, to store this calibration there">Connect module</button>
+            <button class="btn" id="cv_save" hidden>Save to module</button>
+            <!-- [Save to module] asks here, one line in its place (js/calibview.js askStore()) -->
+            <span class="cv-confirm" id="cv_confirm" hidden>
+              <span id="cv_confirm_text"></span>
+              <button class="btn btn-accent" id="cv_confirm_ok">Store</button>
+              <button class="btn" id="cv_confirm_cancel">Cancel</button>
+            </span>
+            <button class="btn" id="cv_syx_load" title="Shows a calibration saved as a .syx file">Load .syx</button>
+            <button class="btn" id="cv_syx" hidden title="This calibration as a SysEx file: sent to a module over MIDI, it asks to store it (right encoder)">Download .syx</button>
+            <button class="btn" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
 
   <script type="module">
 
+    // --- SPA Router with dynamic import() ---
+    // Uses dynamic import() for proper ES module loading:
+    //   - Modules appear in DevTools Sources panel with correct names
+    //   - Breakpoints and source maps work reliably
+    //   - Stack traces show actual call sites
+    //   - Proper async error handling via try/catch
 
-    import {
-      BACKEND,
-      getFirmwareMemoryMap,
-      fetchAvailableFirmwares,
-      loadFirmware,
-      teensyBootloader
-    }
-      from "https://eh2k.spdns.org/eh2k_github_io/flash/teensy_loader_v1.js?12";
-
-    import {
-      remoteInit,
-      remoteSend,
-      remoteReboot,
-      remoteFirmwareVersion,
-      remoteFirmwareVersion2,
-      formatSD,
-      remoteGetSettings,
-      sendFLASHDATA,
-      fileOpen,
-    } from "https://eh2k.spdns.org/eh2k_github_io/flash/../remote.js?15";
-
-    window.onerror = async function (message, source, lineno, colno, error) {
-      await fetch(BACKEND + `/flash/err?ts=${new Date().getTime()}&msg=${message}&src=${source}&lno=${lineno}&err=${error}`)
-      return true;
+    // home/update/library/engines: the names of earlier versions (the start page and the library are part of the module
+    // page now), old links and bookmarks still work;
+    // needsModule: without a connected module the module page instead, which connects (index.js scNeedsModule)
+    // params: query parameters of the page itself, kept on a refresh
+    const routes = {
+      module:    { html: 'pages/module/module.html', tab: 'module' }, // without a module: connect one, or ?demo
+      update:    { html: 'pages/module/module.html', tab: 'module' },
+      library:   { html: 'pages/module/module.html', tab: 'module' },
+      engines:   { html: 'pages/module/module.html', tab: 'module' },
+      home:      { html: 'pages/module/module.html', tab: 'module' },
+      live:      { html: 'pages/live/live.html', tab: 'live', needsModule: true },
+      debug:     { html: 'pages/debug/debug.html', tab: 'debug', needsModule: true }, // its tab only with ?debug
+      emulator:  { tab: 'module', emulator: true }, // a page of the module's: #emu_page beside #app (js/emulator.js)
+      loader:    { html: 'pages/loader/loader.html', tab: 'loader' },
+      privacy:   { html: 'pages/privacy/privacy.html' }, // a draft: no link to it yet, only #privacy
     };
 
-    async function main() {
+    let _currentCleanup = null;
+    let _routeGen = 0;
+    let _currentRouteKey = null;
 
-      document.getElementById("setup").hidden = false
-      document.getElementById("log2").innerHTML = ""
+    async function renderRoute() {
+      // a newer route change makes this one stop after each await: the older one must not put its page or module
+      // over the newer one
+      const gen = ++_routeGen;
+      const key = location.hash.replace('#', '') || 'module';
+      const route = routes[key] || routes.module;
+      window.scRouteNeedsModule = !!route.needsModule;
+      if (route.needsModule && window.scNeedsModule && window.scNeedsModule(key))
+        return; // on to the module page, back here once connected
 
-      var idd = ""
+      for (const a of document.querySelectorAll('.sc-nav a'))
+        a.classList.toggle('active', a.dataset.tab == route.tab);
 
+      // Strip query params only when switching to a different route; ?target= (the type of module: the loader and the
+      // firmware list go by it), ?demo (demo.js), ?debug (the Debug tab), ?emu (js/emulator.js) and ?preview
+      // (js/github.js) stay, and on the first render (a refresh, a link) the route's own params
+      if (key !== _currentRouteKey && location.search) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const kept = new URLSearchParams();
+        const own = _currentRouteKey === null ? route.params || [] : [];
+        for (const name of ["target", "demo", "debug", "emu", "preview", ...own])
+          if (urlParams.has(name))
+            kept.set(name, urlParams.get(name));
+        // ?emu=SYNTH/Plaits readable (URLSearchParams writes %2F)
+        history.replaceState({}, '', location.pathname + (kept.size ? "?" + String(kept).replace(/%2F/g, "/") : "") + location.hash);
+      }
+      _currentRouteKey = key;
+
+      // Cleanup previous route module (if it exported a destroy function); window.scRouteCleanup: one a module set
+      // itself right away, so that it runs also when the module did not finish loading (pages/debug/debug.js)
+      if (_currentCleanup) {
+        try { _currentCleanup(); } catch (e) { console.warn('[router] cleanup error:', e); }
+      }
+      if (window.scRouteCleanup && window.scRouteCleanup !== _currentCleanup) {
+        try { window.scRouteCleanup(); } catch (e) { console.warn('[router] cleanup error:', e); }
+      }
+      _currentCleanup = null;
+      window.scRouteCleanup = null;
+
+      // the Emulator page: #emu_page beside #app, shown in its place (the emulator keeps running while a page loads
+      // into #app, so that the module page can open it); left, the emulator stops. The module stays connected for it
+      // ([Flash to module] of FV1emu and DXFM), the sidebar's [connect] as on every page (remoteUsbInit)
+      const app = document.getElementById('app');
+      const emuPage = document.getElementById('emu_page');
+      if (route.emulator) {
+        app.hidden = true;
+        app.replaceChildren();
+        emuPage.hidden = false;
+        document.getElementById("connect").onclick = null;
+        const [emu, usb] = await Promise.all([import('./js/emulator.js'), import('./js/remoteBulk.js')]);
+        if (gen !== _routeGen) return;
+        emu.showEmulatorPage();
+        usb.remoteUsbInit(null, () => { }).catch(err => console.error(err));
+        return;
+      }
+      if (!emuPage.hidden) {
+        emuPage.hidden = true;
+        app.hidden = false;
+        (await import('./js/emulator.js')).closeEmulator();
+        if (gen !== _routeGen) return;
+      }
+
+      // Fetch and inject HTML fragment
       try {
-        idd = await remoteInit(document.getElementById("log2"))
-      }
-      catch (err) {
-        console.error(err)
-      }
-
-      var select = document.getElementById("firmwares");
-
-      await fetchAvailableFirmwares(select)
-
-      select.onchange = () => {
-        if (select.value) {
-          const args = new URLSearchParams(select.value.split("?")[1]);
-          const hash = args.get("v");
-          const url = upgradeButton.href = BACKEND + "/flash/" + select.value;
-          document.getElementById("firmware").innerText = `FIRMWARE - ${hash}`
-        }
+        const res = await fetch(route.html);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        if (gen !== _routeGen) return;
+        // Parse with DOMParser to cleanly extract body content from
+        // both full HTML documents and plain fragments
+        const doc = new DOMParser().parseFromString(text, 'text/html');
+        document.getElementById('app').innerHTML = doc.body.innerHTML;
+      } catch (err) {
+        console.error('[router] page load error:', err);
+        document.getElementById('app').innerHTML =
+          `<div class="sc-main"><div class="panel warn">Failed to load page: ${err.message}</div></div>`;
+        return;
       }
 
-      select.onchange();
+      document.getElementById("connect").onclick = null;
+      document.getElementById("connect").disabled = true;
 
-      let flashButton = document.getElementById('flashButton')
-      flashButton.onclick = async () => {
-        await loadFirmware()
-      }
-
-      let resetButton = document.getElementById('resetButton')
-      resetButton.onclick = async () => {
+      // Load route module via dynamic import()
+      // Uses Blob + sourceURL so Chrome DevTools maps breakpoints to the real file,
+      // while the unique blob URL forces re-evaluation on each route visit.
+      // Relative imports are resolved to absolute URLs so they work from blob: context.
+      const jsFile = route.html.replace('.html', '.js');
+      const jsUrl = new URL(jsFile, location.href).href;
+      const jsBase = jsUrl.substring(0, jsUrl.lastIndexOf('/') + 1);
+      try {
+        const resp = await fetch(jsUrl);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        let source = await resp.text();
+        if (gen !== _routeGen) return;
+        // Rewrite relative import specifiers (from/import/side-effect) to absolute URLs
+        // so they resolve correctly from the blob: origin; also minified code (from"../x.js", import"./y.js")
+        source = source.replace(
+          /(from\s*['"]|import\s*\(\s*['"]|import\s*['"])(\.\.?\/[^'"]+)(['"])/g,
+          (_, prefix, relPath, quote) => prefix + new URL(relPath, jsBase).href + quote
+        );
+        // import.meta.url of a blob: module is the blob URL, files next to the module are relative to jsUrl
+        source = source.replace(/\bimport\.meta\.url\b/g, JSON.stringify(jsUrl));
+        const blob = new Blob(
+          [source + `\n//# sourceURL=${jsUrl}\n`],
+          { type: 'text/javascript' }
+        );
+        const blobUrl = URL.createObjectURL(blob);
         try {
-          await teensyBootloader()
-          progress(0, 0, "teensy in flashing mode, click [flash] to start loading...")
-        }
-        catch (_) { }
-      }
-
-      const alert = (message, type) => {
-        halfmoon.initStickyAlert({
-          content: message,
-          alertType: "alert-" + type,
-        })
-      }
-
-      window.progress = function (value, max, info) {
-        let element = document.getElementById('progress')
-        element.value = value;
-        element.max = max;
-        element.hidden = !(value < max)
-
-        if (info)
-          document.getElementById("log2").innerHTML = info
-      }
-
-      var firmwareVersion = await remoteFirmwareVersion()
-      var showEngines = false
-      var showUpgrade = false
-
-      const urlParams = new URLSearchParams(window.location.search);
-      let sha = urlParams.get('sha');
-      if (sha)
-        sha = `&sha=${sha}`
-      else
-        sha = ""
-      const select0 = urlParams.get('select');
-      if (select0)
-        sha += `&select=${select0}`
-
-      select.onchange();
-      let enableUpgrade = true;
-      if (idd.startsWith("5")) {
-
-        document.getElementById("img_module").hidden = false
-        document.getElementById("img_module").src = "dsm0.svg"
-
-        const deviceId = urlParams.get('deviceId');
-        if (deviceId != idd) {
-          document.location = window.location.search = `?target=SC_DSM0&deviceId=${idd}&transmit_delay=1&transmit_frame=16${sha}`
-          return
-        }
-
-        const transmit_delay = urlParams.get('transmit_delay');
-        const transmit_frame = urlParams.get('transmit_frame');
-        document.getElementById("transmitInfo").innerHTML = `<br/>transmit_delay: ${transmit_delay}<br/>transmit_frame: ${transmit_frame}`
-      }
-      else if (idd.startsWith("AF4")) {
-        //TempUtile
-        const ver = urlParams.get('ver');
-        if (ver != "firmware_TU_T32_latest") {
-          document.location = window.location.search = `?target=TU_T32&deviceId=${idd}&transmit_delay=1&transmit_frame=16${sha}`
-          return
-        }
-        enableUpgrade = false;
-      }
-      else if (idd.startsWith("04E")) {
-        document.getElementById("img_module").hidden = false
-        document.getElementById("img_module").src = "u_oc.png"
-        const deviceId = urlParams.get('deviceId');
-        if (deviceId != idd) {
-          document.location = window.location.search = `?target=OC_T40&deviceId=${idd}&transmit_delay=1&transmit_frame=64${sha}`
-          return
-        }
-      }
-      else if (idd.startsWith("14E")) {
-        document.getElementById("img_module").hidden = false
-        document.getElementById("img_module").src = "oc_t41.jpg"
-        const deviceId = urlParams.get('deviceId');
-        if (deviceId != idd) {
-          document.location = window.location.search = `?target=OC_T41&deviceId=${idd}&transmit_delay=1&transmit_frame=64${sha}`
-          return
-        }
-      }
-      else {
-        document.getElementById("img_module").hidden = false;
-        select.style.visibility = "hidden"
-        const midi_targets = document.getElementById("midi_targets");
-        midi_targets.style.visibility = "hidden"
-        document.getElementById("firmware").innerHTML = document.getElementById("loader").innerHTML;
-        document.getElementById("setup").innerHTML = `
-
-<p><b>The flashing process</b></p>
-
-<p style="text-decoration: underline;">Stage 1:  Flashing Squares&Circles Loader</p><p>For a bare Teensy 4.0, the loader firmware must be installed first. 
-This can be done directly in your browser (tested with Chrome) following the steps on the left side. 
-</p><p>If your broswer is not supporting the serial interface, you can download the <a href="https://github.com/eh2k/squares-and-circles/releases/download/0.0.0/squares-and-circles-teensy4XX-loader.hex">Squares&Circles loader hex file</a> and flash it with the Teensy Loader. 
-After flashing the loader the device startups only showing the splash screen with a blinking "Ready to Update".</p>
-
-<p style="text-decoration: underline;">Stage 2:  Flashing Updates + Machines/Engines</p><p>If the Squares&Circles device is connected to your PC, i.e. the loader or an older version has already been installed, 
-it is automatically recognized via <a href="https://studiocode.dev/check-webmidi/" target="_blank">WebMidi</a> and the [Update] button and other functions are automatically activated.</p>
-
-`;
-        console.log("no squares&circles detected.")
-        return
-      }
-
-      // if (firmwareVersion.startsWith("e030c30")) {
-      //   showUpgrade = false;
-      // } else 
-      if (firmwareVersion != "00000") {
-        showUpgrade = enableUpgrade
-      } else {
-        firmwareVersion = await remoteFirmwareVersion2()
-      }
-
-      console.log("DeviceId:", idd)
-      console.log("Firmware:", firmwareVersion)
-      document.getElementById("log2").innerHTML += ", Version: " + firmwareVersion + "<br>"
-      document.getElementById("setup").hidden = false
-
-      let cmdParentElement = "commands";
-      function add_cmd(header, code) {
-        if (header != "") {
-          const b = document.createElement("button")
-          b.className = "btn btn-sm bg-light text-dark"
-          b.style.margin = "1px"
-          b.style.marginBottom = "2px"
-          b.id = header
-          b.innerHTML = header;
-          b.onclick = async () => {
-            await remoteSend(code)
-            await remoteReboot();
+          const mod = await import(blobUrl);
+          if (mod.destroy && gen === _routeGen) {
+            _currentCleanup = mod.destroy;
           }
-          document.getElementById(cmdParentElement).lastChild.appendChild(b)
-          return b
-        }
-        else {
-          const div = document.createElement("div")
-          div.className = "my-20"
-          document.getElementById(cmdParentElement).appendChild(div)
-        }
-      }
-      add_cmd("")
-      add_cmd("ENTER CALIBRATION", '0')
-      add_cmd("")
-
-      const settings = await remoteGetSettings();
-
-      add_cmd((settings["FLIP_180"] ? "☑" : "☐") + "FLIP_180", 'F')
-      add_cmd((settings["MAX_BRIGHTNESS"] ? "☑" : "☐") + "DISP_BRIGHTNESS", 'B')
-      add_cmd("")
-      if (idd.startsWith("04E")) {
-        add_cmd((settings["DAC_8564"] ? "☑" : "☐") + "DAC_8564 / " + (!settings["DAC_8564"] ? "☑" : "☐") + "DAC_8565", 'D')
-        add_cmd("")
-        add_cmd((!settings["SH1106_SSD1306"] ? "☑" : "☐") + "SH1106 / " + (settings["SH1106_SSD1306"] ? "☑" : "☐") + "SSD1306", '2')
-        add_cmd((!settings["DISPLAY_SPI1"] ? "☑" : "☐") + "DISPLAY_SPI / " + (settings["DISPLAY_SPI1"] ? "☑" : "☐") + "DISPLAY_SPI1", '1')
-      }
-
-      try {
-        if (showUpgrade) {
-
-          showEngines = true
-
-          document.getElementById('halfkay').innerHTML =
-            document.getElementById('upgrade').innerHTML
-
-          let upgradeButton = document.getElementById('upgradeButton')
-          upgradeButton.onclick = async () => {
-
-            document.getElementById("setup").hidden = true
-            document.getElementById("engines0").hidden = true
-            upgradeButton.disabled = true
-
-            // const firmware = await fetch("./firmware_full.bin")
-            // const firmwareBin = await firmware.arrayBuffer()
-            const firmware = await getFirmwareMemoryMap();
-            const firmwarePages = firmware.paginate(4096, 0xff)
-            let info = "Flashing firmware.bin"
-
-            let page = 0
-            let offset = null
-            const engineOffset = 1024 * 1024;
-            for (const entry of firmwarePages.entries()) {
-              if (offset == null) {
-                offset = entry[0]
-                break;
-              }
-            }
-            for (const entry of firmwarePages.entries()) {
-              const i = entry[0] - offset
-
-              if (i < engineOffset)
-                continue; //Erstmal die Engines
-
-              console.log("" + page + "/" + firmwarePages.size)
-              progress(page, firmwarePages.size, info + ", writing page 0x" + (i).toString(16) + "...")
-              await sendFLASHDATA( "0x" + (i).toString(16), entry[1]);
-
-              page++
-            }
-
-            for (const entry of firmwarePages.entries()) {
-              const i = entry[0] - offset
-
-              if (i >= engineOffset)
-                continue; //Jetzt die Firmware
-
-              console.log("" + page + "/" + firmwarePages.size)
-              progress(page, firmwarePages.size, info + ", writing page 0x" + (i).toString(16) + "...")
-              await sendFLASHDATA("0x" + (i).toString(16), entry[1]);
-
-              page++
-            }
-
-            await fetch(BACKEND + `/flash/app?${idd}~UPGRADE_${select.value}`)
-            await remoteReboot();
+          else if (mod.destroy) {
+            mod.destroy(); // the route was left while it loaded
           }
+        } finally {
+          URL.revokeObjectURL(blobUrl);
         }
-      }
-      catch (err) {
-        console.error(err)
-        document.getElementById("log2").innerHTML = `<div class="text-danger">${err}</div>`;
-      }
-
-      if (showEngines) {
-
-        add_cmd("")
-
-        add_cmd("FORMAT SD (keep patches)").onclick = async () => {
-          const ret = await formatSD(125)
-          console.log("FORMAT SD", ret[0])
-          await remoteReboot();
-        }
-
-        add_cmd("FORMAT SD (complete)").onclick = async () => {
-          const ret = await formatSD(124)
-          console.log("FORMAT SD", ret[0])
-          await remoteReboot();
-        }
-
-        document.getElementById("engines0").hidden = false
-        cmdParentElement = "engines"
-
-        add_cmd("")
-
-        add_cmd("BIN").onclick = async () => {
-
-          const loaded = await fileOpen(".bin", async (data, name) => {
-            const blob = name.split(".")[0].padEnd(8, '_').substring(0, 8)
-            console.log(blob, name.length, data)
-            await sendFLASHDATA(blob, data, progress);
-          }, true)
-
-          if (loaded)
-            await remoteReboot();
-        }
-
-        add_cmd("DXFM").onclick = async () => {
-
-          await fileOpen(".syx,.sysex", async syx => {
-            console.log(syx)
-            const data = new Uint8Array(syx.slice(6, 6 + 4096));
-            await sendFLASHDATA("DXFMSYX0", data, progress);
-            await remoteReboot();
-          })
-        }
-
-        add_cmd("FV1emu").onclick = async () => {
-
-          window.open("https://eh2k.github.io/%E2%96%A1%E2%97%8F/fx.html", '_blank').focus();
-        }
-
-        add_cmd("")
-
-        add_cmd("TR707").onclick = async () => {
-          const ic34 = await fetch("../roms/IC34_TR707_SNDROM.bin")
-          await sendFLASHDATA("707_IC34", await ic34.arrayBuffer(), progress);
-          const ic35 = await fetch("../roms/IC35_TR707_SNDROM.bin")
-          await sendFLASHDATA("707_IC35", await ic35.arrayBuffer(), progress);
-          await remoteReboot();
-        }
-
-        add_cmd("TR909").onclick = async () => {
-          const high = await fetch("../roms/909_HiHats.bin")
-          await sendFLASHDATA("909_HIGH", await high.arrayBuffer(), progress);
-          const ride = await fetch("../roms/909_Ride.bin")
-          await sendFLASHDATA("909_RIDE", await ride.arrayBuffer(), progress);
-          await remoteReboot();
-        }
-
+        console.debug(`[router] loaded: ${jsFile}`);
+      } catch (err) {
+        console.error(`[router] module error: ${jsFile}`, err);
       }
     }
-    await main();
+
+    window.addEventListener('hashchange', renderRoute);
+    renderRoute();
   </script>
 
-  <script src="../halfmoon.min.js"></script>
+  <script src="./vendor/bootstrap-5.3.3.bundle.min.js"></script>
 
 </body>
 
