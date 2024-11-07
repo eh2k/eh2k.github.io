@@ -1,0 +1,1 @@
+import{remoteUsbInit}from"../../js/remoteBulk.js";remoteUsbInit(null,()=>{});

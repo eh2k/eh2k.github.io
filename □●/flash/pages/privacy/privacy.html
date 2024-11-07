@@ -1,0 +1,63 @@
+<!-- the PRIVACY page (#privacy, linked at the bottom of the sidebar, index.html); what it says has to stay true to what
+     the app does: js/github.js previewFor() and worker/src/worker.js, worker/wrangler.toml (section 3), js/github.js,
+     js/appfiles.js, js/flasher.js, pages/module/notes.js, worker/deploy.sh (section 2), js/remoteBulk.js,
+     pages/module/module.js (section 4). "Last updated": the date of each change of the text -->
+<div class="sc-main sc-privacy">
+  <section class="panel">
+    <h1 class="sc-title">Privacy notice</h1>
+    <p class="mute">Last updated: 21 November 2026</p>
+    <p>This web app connects to your Squares &amp; Circles module over USB in your browser, shows its firmware and apps
+      and updates them. It sets no cookies and uses no analytics service. The data of your module stay in your browser,
+      except those of the module register (section 3).</p>
+  </section>
+
+  <section class="panel">
+    <h2>1. Contact</h2>
+    <p>Eduard Heidt<br />E-mail: <a href="mailto:eh2k@gmx.de">eh2k@gmx.de</a></p>
+  </section>
+
+  <section class="panel">
+    <h2>2. Hosting and content from GitHub</h2>
+    <p>The page is hosted by GitHub Pages (GitHub, Inc., USA); your browser also loads the firmware list, the apps, the
+      loaders and the release notes from GitHub. GitHub receives your IP address and the usual data of a web request and
+      logs them. A copy for trying out new versions, squares-and-circles.eh2k.workers.dev, is served by Cloudflare
+      (section 3), which then receives these data instead. Other sites (ROM downloads, Teensy Loader) are only contacted
+      when you click their links. Legal basis: Art. 6(1)(f) GDPR, our legitimate interest in providing the page
+      reliably. GitHub and Cloudflare are certified under the EU-U.S. Data Privacy Framework.</p>
+  </section>
+
+  <section class="panel">
+    <h2>3. Module register</h2>
+    <p>When a module connects, the page sends its serial number, type and firmware version to our server
+      (squares-and-circles.eh2k.workers.dev), once per module, firmware version and browser tab. The server keeps per
+      module: serial number, type, firmware version and since when, first and last report and how many, whether it is
+      a test module that gets the next release before it is published, and a note of ours. It answers whether the
+      module gets that release. It also counts, without the serial number, how many modules are new, updated to another
+      firmware version or active per month, by type and firmware version; these counts are anonymous and kept. It does
+      not keep your IP address, where you are, your browser's details or the single reports; to find errors, Cloudflare
+      logs each request for us (your IP address and browser among its data) for at most 7 days. There is no automated
+      decision-making or profiling.</p>
+    <p>Purpose: to know how many modules use the firmware and which versions, to help with problems and to give test
+      modules the release under test. An entry is deleted 24 months after its last report (a test module's when it is no
+      longer one), on request at once. Processor: Cloudflare, Inc., 101 Townsend St., San Francisco, CA 94107, USA,
+      under its Data Processing Addendum. Legal basis: Art. 6(1)(f) GDPR, our legitimate interest in these purposes; the
+      page reads these data from your module anyway, for the update you asked for (§ 25(2) No. 2 TDDDG). The report is
+      not required by law or contract. You can object to it by an e-mail to the address in section 1 (Art. 21 GDPR); we
+      then delete the entry and keep only the serial number, marked so that its reports are no longer stored.</p>
+  </section>
+
+  <section class="panel">
+    <h2>4. Stored in your browser</h2>
+    <p>The type of module you chose last, the serial number of the module connected last (to find it again) and that you
+      have seen the note on the module register (local storage), and for the browser tab the modules already reported
+      with the server's answers (session storage). You can delete them with your browser's site data. Legal basis:
+      § 25(2) No. 2 TDDDG.</p>
+  </section>
+
+  <section class="panel">
+    <h2>5. Your rights</h2>
+    <p>You have the right to access, rectification, erasure, restriction of processing, data portability and objection
+      (Art. 15–18, 20, 21 GDPR): write an e-mail to the address in section 1. You can also lodge a complaint with a
+      supervisory authority (Art. 77 GDPR), in particular in the EU member state where you live or work.</p>
+  </section>
+</div>
