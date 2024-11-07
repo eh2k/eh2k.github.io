@@ -1,478 +1,228 @@
 <!doctype html>
-<html lang="en">
-<style>
-  .card-img-top {
-    width: 100%;
-    height: 60vh;
-    object-fit: fill;
-  }
-</style>
+<html lang="en" data-bs-core="modern" data-bs-theme="dark">
 
 <head>
-  <meta charset="utf-8">
-  <!-- Meta tags -->
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-  <meta name="viewport" content="width=device-width" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>□● Squares &amp; Circles</title>
 
-  <link href="../halfmoon-variables.min.css" rel="stylesheet" />
-
-  <script src="../webmidi.iife.v3.1.8.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/webmidi@3.1.11/dist/iife/webmidi.iife.min.js"></script> -->
-
+  <link href="./vendor/halfmoon-2.0.2.min.css" rel="stylesheet" />
+  <link href="./vendor/fonts.css" rel="stylesheet" />
+  <link href="./theme.css" rel="stylesheet" />
+  <script src="./js/index.js" type="module"></script>
 </head>
 
-<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true"
-  data-sidebar-shortcut-enabled="true" data-set-preferred-mode-onload="true">
+<body>
 
-
-  <div class="page-wrapper with-navbar" data-sidebar-type="overlayed-sm-and-down">
-
-    <div class="sticky-alerts"></div>
-    <!-- Navbar -->
-    <nav class="navbar">
-      <!-- <div class="navbar-content">
-        <button class="btn btn-action" type="button">
-          <i class="fa fa-bars" aria-hidden="true"></i>
-          <span class="sr-only">Toggle sidebar</span> 
-        </button>
-      </div> -->
-      <a href="." class="navbar-brand">
-        <p>□● WebFlasher</p>
+  <div class="sc-shell">
+    <!-- the module: picture, name, connection, firmware, flash (index.js keeps it up to date); the pages -->
+    <aside class="sc-side">
+      <a class="sc-brand" href="#home">
+        <span class="sc-logo" aria-hidden="true"><span class="sq"></span><span class="ci"></span></span>
+        <span>Squares &amp; Circles</span>
       </a>
-      <div class="navbar-content ml-auto">
-        <select class="form-control" id="firmwares" style="align-self: center; width: auto"></select>
-        <select class="form-control" id="midi_targets" style="align-self: center; width: auto"></select>
-      </div>
-    </nav>
 
-    <div class="content-wrapper">
-      <div class="container-fluid">
-        <div class="row mx-5">
-          <div class="card bg-transparent m-5 d-none d-md-block" style="padding: 0; writing-mode: vertical-lr">
-            <img hidden id="img_module" src="u_oc.png" class="card-img-top" style="height: 580px;" />
-          </div>
-          <div class="card m-5">
-            <h6 id="firmware" class="content-title my-5">FIRMWARE</a></h6>
-            <h6 id="loader" class="content-title my-5" hidden>Stage 1: Flashing Squares&Circles Loader</h6>
-            <ol id="halfkay">
-              <li>Connect the Teensy4 to your PC using a USB cable.</li>
-              <!-- <li>Press the Button on the Teensy.
-                <ul style="list-style: initial;">
-                  <sup>
-                    Make shure the teensy-loader is not running in background.
-                  </sup>
-                </ul> -->
-              <li>Click [Reset] - connect to USB device listed in the browser-popup.
-                <ul style="list-style: initial;">
-                  <li><button class="btn btn-sm bg-light text-dark" id="resetButton">Reset</button></li>
-                  <li>If no USB device is listet, Teensy is likely in the flashing mode, follow step 3</li>
-                </ul>
-              </li>
-              <li>Click [Flash] - connect to 'HID 16C0:0478' device listed in the browser-popup.
-                <ul style="list-style: initial;">
-                  <li>
-                    <div class="d-flex flex-row">
-                      <button class="btn btn-sm bg-light text-dark" id="flashButton">Flash</button>
-                    </div>
-                  </li>
-                  <li>If no USB device is listet, press the Button on the teensy.</li>
-                </ul>
-              </li>
-              <sup style="margin:0px">
-                Tested with Chrome - Ensure the TeensyLoader is not running in background.
-              </sup>
-            </ol>
-          </div>
-
-          <div class="card m-5" id="upgrade" hidden>
-            <button class="btn bg-light text-dark" id="upgradeButton">Flash/Update</button>
-            <div id="transmitInfo"></div>
-          </div>
-
-          <div id="setup" class="col card m-5 " hidden>
-            <commands id="commands" />
-          </div>
-
-          <div id="engines0" class="col card m-5 " hidden>
-            <h4 class="content-title my-5">ENGINES</h4>
-            <commands id="engines" />
+      <div class="sc-card">
+        <div class="sc-device">
+          <div class="sc-thumb"><img id="img_module" src="img/u_oc.png" alt="" hidden /></div>
+          <div class="sc-device-text">
+            <span class="sc-device-name" id="device_name">No module</span>
+            <span class="sc-status" id="device_status">not connected</span>
           </div>
         </div>
-        <div class="row mx-5">
-          <div class="col card m-5">
-            <div id="log2"></div>
+        <div class="sc-device-sub"><span id="connected"></span><span id="device_fw"></span></div>
+        <div class="sc-meter-box" id="device_meter" hidden>
+          <div class="sc-meter-head"><span>App flash</span><span class="mono" id="device_meter_text"></span></div>
+          <div class="sc-meter"><div id="device_meter_bar" style="width: 0"></div></div>
+        </div>
+        <label class="sc-field" id="target_box">Module type
+          <select class="sc-select form-select" id="target_select">
+            <option value="">choose…</option>
+            <option value="OC_T40">O_C T4.0</option>
+            <option value="OC_T41">O_C T4.1</option>
+            <option value="SC_DSM0">S&amp;C DSM0</option>
+          </select>
+        </label>
+        <button class="btn" id="connect">connect</button>
+      </div>
+
+      <nav class="sc-nav" aria-label="Pages">
+        <a href="#module" data-tab="module"><span>Module</span></a>
+        <a href="#library" data-tab="library"><span>Library</span><span class="count" id="nav_updates"></span></a>
+        <a href="#live" data-tab="live"><span>Live</span></a>
+        <a href="#loader" data-tab="loader"><span>Install loader</span></a>
+        <a href="#debug" data-tab="debug" id="nav_debug" hidden><span>Debug</span></a>
+      </nav>
+    </aside>
+
+    <main id="app" class="sc-content"></main>
+  </div>
+
+  <div>
+    <div class="modal fade" id="flashing" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title" id="modal-title-1">
+              <div id="log2"></div>
+            </h1>
+          </div>
+          <div class="modal-body">
             <progress id="progress" value="0" max="100" style="width: 100%;" hidden></progress>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- <nav class="navbar navbar-fixed-bottom">
-    </nav> -->
+    <div class="modal fade" id="modalConnect" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title">□●</h1>
+          </div>
+          <div class="modal-body">
+            No S&amp;C devices connected.
+          </div>
+          <div class="modal-footer">
+            <a href="#loader" class="btn">Flash Loader</a>
+            <button class="btn btn-accent" id="connectButton">Retry</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
 
   <script type="module">
 
+    // --- SPA Router with dynamic import() ---
+    // Uses dynamic import() for proper ES module loading:
+    //   - Modules appear in DevTools Sources panel with correct names
+    //   - Breakpoints and source maps work reliably
+    //   - Stack traces show actual call sites
+    //   - Proper async error handling via try/catch
 
-    import {
-      BACKEND,
-      getFirmwareMemoryMap,
-      fetchAvailableFirmwares,
-      loadFirmware,
-      teensyBootloader
-    }
-      from "https://eh2k.spdns.org/eh2k_github_io/flash/teensy_loader_v1.js?12";
-
-    import {
-      remoteInit,
-      remoteSend,
-      remoteReboot,
-      remoteFirmwareVersion,
-      remoteFirmwareVersion2,
-      formatSD,
-      remoteGetSettings,
-      sendFLASHDATA,
-      fileOpen,
-    } from "https://eh2k.spdns.org/eh2k_github_io/flash/../remote.js?15";
-
-    window.onerror = async function (message, source, lineno, colno, error) {
-      await fetch(BACKEND + `/flash/err?ts=${new Date().getTime()}&msg=${message}&src=${source}&lno=${lineno}&err=${error}`)
-      return true;
+    // update/engines: the names before the redesign, old links and bookmarks still work;
+    // needsModule: without a connected module the start page instead (index.js scNeedsModule)
+    const routes = {
+      home:      { html: 'pages/start/start.html' },
+      module:    { html: 'pages/module/module.html', tab: 'module', needsModule: true },
+      update:    { html: 'pages/module/module.html', tab: 'module', needsModule: true },
+      library:   { html: 'pages/library/library.html', tab: 'library', needsModule: true },
+      engines:   { html: 'pages/library/library.html', tab: 'library', needsModule: true },
+      live:      { html: 'pages/live/live.html', tab: 'live', needsModule: true },
+      debug:     { html: 'pages/debug/debug.html', tab: 'debug', needsModule: true }, // its tab only with ?debug
+      loader:    { html: 'pages/loader/loader.html', tab: 'loader' },
+      privacy:   { html: 'pages/privacy/privacy.html' }, // a draft: no link to it yet, only #privacy
     };
 
-    async function main() {
+    let _currentCleanup = null;
+    let _routeGen = 0;
+    let _currentRouteKey = null;
 
-      document.getElementById("setup").hidden = false
-      document.getElementById("log2").innerHTML = ""
+    async function renderRoute() {
+      // a newer route change makes this one stop after each await: the older one must not put its page or module
+      // over the newer one
+      const gen = ++_routeGen;
+      const key = location.hash.replace('#', '') || 'home';
+      const route = routes[key] || routes.home;
+      window.scRouteNeedsModule = !!route.needsModule;
+      if (route.needsModule && window.scNeedsModule && window.scNeedsModule(key))
+        return; // on to the start page, back here once connected
 
-      var idd = ""
+      for (const a of document.querySelectorAll('.sc-nav a'))
+        a.classList.toggle('active', a.dataset.tab == route.tab);
 
+      // Strip query params only when switching to a different route; ?target= (the type of module: the loader and the
+      // firmware list go by it), ?demo (demo.js) and ?debug (the Debug tab) stay
+      if (key !== _currentRouteKey && location.search) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const kept = new URLSearchParams();
+        for (const name of ["target", "demo", "debug"])
+          if (urlParams.has(name))
+            kept.set(name, urlParams.get(name));
+        history.replaceState({}, '', location.pathname + (kept.size ? "?" + kept : "") + location.hash);
+      }
+      _currentRouteKey = key;
+
+      // Cleanup previous route module (if it exported a destroy function); window.scRouteCleanup: one a module set
+      // itself right away, so that it runs also when the module did not finish loading (pages/debug/debug.js)
+      if (_currentCleanup) {
+        try { _currentCleanup(); } catch (e) { console.warn('[router] cleanup error:', e); }
+      }
+      if (window.scRouteCleanup && window.scRouteCleanup !== _currentCleanup) {
+        try { window.scRouteCleanup(); } catch (e) { console.warn('[router] cleanup error:', e); }
+      }
+      _currentCleanup = null;
+      window.scRouteCleanup = null;
+
+      // Fetch and inject HTML fragment
       try {
-        idd = await remoteInit(document.getElementById("log2"))
-      }
-      catch (err) {
-        console.error(err)
-      }
-
-      var select = document.getElementById("firmwares");
-
-      await fetchAvailableFirmwares(select)
-
-      select.onchange = () => {
-        if (select.value) {
-          const args = new URLSearchParams(select.value.split("?")[1]);
-          const hash = args.get("v");
-          const url = upgradeButton.href = BACKEND + "/flash/" + select.value;
-          document.getElementById("firmware").innerText = `FIRMWARE - ${hash}`
-        }
+        const res = await fetch(route.html);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        if (gen !== _routeGen) return;
+        // Parse with DOMParser to cleanly extract body content from
+        // both full HTML documents and plain fragments
+        const doc = new DOMParser().parseFromString(text, 'text/html');
+        document.getElementById('app').innerHTML = doc.body.innerHTML;
+      } catch (err) {
+        console.error('[router] page load error:', err);
+        document.getElementById('app').innerHTML =
+          `<div class="sc-main"><div class="panel warn">Failed to load page: ${err.message}</div></div>`;
+        return;
       }
 
-      select.onchange();
+      document.getElementById("connect").onclick = null;
+      document.getElementById("connect").disabled = true;
 
-      let flashButton = document.getElementById('flashButton')
-      flashButton.onclick = async () => {
-        await loadFirmware()
-      }
-
-      let resetButton = document.getElementById('resetButton')
-      resetButton.onclick = async () => {
+      // Load route module via dynamic import()
+      // Uses Blob + sourceURL so Chrome DevTools maps breakpoints to the real file,
+      // while the unique blob URL forces re-evaluation on each route visit.
+      // Relative imports are resolved to absolute URLs so they work from blob: context.
+      const jsFile = route.html.replace('.html', '.js');
+      const jsUrl = new URL(jsFile, location.href).href;
+      const jsBase = jsUrl.substring(0, jsUrl.lastIndexOf('/') + 1);
+      try {
+        const resp = await fetch(jsUrl);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        let source = await resp.text();
+        if (gen !== _routeGen) return;
+        // Rewrite relative import specifiers (from/import/side-effect) to absolute URLs
+        // so they resolve correctly from the blob: origin; also minified code (from"../x.js", import"./y.js")
+        source = source.replace(
+          /(from\s*['"]|import\s*\(\s*['"]|import\s*['"])(\.\.?\/[^'"]+)(['"])/g,
+          (_, prefix, relPath, quote) => prefix + new URL(relPath, jsBase).href + quote
+        );
+        // import.meta.url of a blob: module is the blob URL, files next to the module are relative to jsUrl
+        source = source.replace(/\bimport\.meta\.url\b/g, JSON.stringify(jsUrl));
+        const blob = new Blob(
+          [source + `\n//# sourceURL=${jsUrl}\n`],
+          { type: 'text/javascript' }
+        );
+        const blobUrl = URL.createObjectURL(blob);
         try {
-          await teensyBootloader()
-          progress(0, 0, "teensy in flashing mode, click [flash] to start loading...")
-        }
-        catch (_) { }
-      }
-
-      const alert = (message, type) => {
-        halfmoon.initStickyAlert({
-          content: message,
-          alertType: "alert-" + type,
-        })
-      }
-
-      window.progress = function (value, max, info) {
-        let element = document.getElementById('progress')
-        element.value = value;
-        element.max = max;
-        element.hidden = !(value < max)
-
-        if (info)
-          document.getElementById("log2").innerHTML = info
-      }
-
-      var firmwareVersion = await remoteFirmwareVersion()
-      var showEngines = false
-      var showUpgrade = false
-
-      const urlParams = new URLSearchParams(window.location.search);
-      let sha = urlParams.get('sha');
-      if (sha)
-        sha = `&sha=${sha}`
-      else
-        sha = ""
-      const select0 = urlParams.get('select');
-      if (select0)
-        sha += `&select=${select0}`
-
-      select.onchange();
-      let enableUpgrade = true;
-      if (idd.startsWith("5")) {
-
-        document.getElementById("img_module").hidden = false
-        document.getElementById("img_module").src = "dsm0.svg"
-
-        const deviceId = urlParams.get('deviceId');
-        if (deviceId != idd) {
-          document.location = window.location.search = `?target=SC_DSM0&deviceId=${idd}&transmit_delay=1&transmit_frame=16${sha}`
-          return
-        }
-
-        const transmit_delay = urlParams.get('transmit_delay');
-        const transmit_frame = urlParams.get('transmit_frame');
-        document.getElementById("transmitInfo").innerHTML = `<br/>transmit_delay: ${transmit_delay}<br/>transmit_frame: ${transmit_frame}`
-      }
-      else if (idd.startsWith("AF4")) {
-        //TempUtile
-        const ver = urlParams.get('ver');
-        if (ver != "firmware_TU_T32_latest") {
-          document.location = window.location.search = `?target=TU_T32&deviceId=${idd}&transmit_delay=1&transmit_frame=16${sha}`
-          return
-        }
-        enableUpgrade = false;
-      }
-      else if (idd.startsWith("04E")) {
-        document.getElementById("img_module").hidden = false
-        document.getElementById("img_module").src = "u_oc.png"
-        const deviceId = urlParams.get('deviceId');
-        if (deviceId != idd) {
-          document.location = window.location.search = `?target=OC_T40&deviceId=${idd}&transmit_delay=1&transmit_frame=64${sha}`
-          return
-        }
-      }
-      else if (idd.startsWith("14E")) {
-        document.getElementById("img_module").hidden = false
-        document.getElementById("img_module").src = "oc_t41.jpg"
-        const deviceId = urlParams.get('deviceId');
-        if (deviceId != idd) {
-          document.location = window.location.search = `?target=OC_T41&deviceId=${idd}&transmit_delay=1&transmit_frame=64${sha}`
-          return
-        }
-      }
-      else {
-        document.getElementById("img_module").hidden = false;
-        select.style.visibility = "hidden"
-        const midi_targets = document.getElementById("midi_targets");
-        midi_targets.style.visibility = "hidden"
-        document.getElementById("firmware").innerHTML = document.getElementById("loader").innerHTML;
-        document.getElementById("setup").innerHTML = `
-
-<p><b>The flashing process</b></p>
-
-<p style="text-decoration: underline;">Stage 1:  Flashing Squares&Circles Loader</p><p>For a bare Teensy 4.0, the loader firmware must be installed first. 
-This can be done directly in your browser (tested with Chrome) following the steps on the left side. 
-</p><p>If your broswer is not supporting the serial interface, you can download the <a href="https://github.com/eh2k/squares-and-circles/releases/download/0.0.0/squares-and-circles-teensy4XX-loader.hex">Squares&Circles loader hex file</a> and flash it with the Teensy Loader. 
-After flashing the loader the device startups only showing the splash screen with a blinking "Ready to Update".</p>
-
-<p style="text-decoration: underline;">Stage 2:  Flashing Updates + Machines/Engines</p><p>If the Squares&Circles device is connected to your PC, i.e. the loader or an older version has already been installed, 
-it is automatically recognized via <a href="https://studiocode.dev/check-webmidi/" target="_blank">WebMidi</a> and the [Update] button and other functions are automatically activated.</p>
-
-`;
-        console.log("no squares&circles detected.")
-        return
-      }
-
-      // if (firmwareVersion.startsWith("e030c30")) {
-      //   showUpgrade = false;
-      // } else 
-      if (firmwareVersion != "00000") {
-        showUpgrade = enableUpgrade
-      } else {
-        firmwareVersion = await remoteFirmwareVersion2()
-      }
-
-      console.log("DeviceId:", idd)
-      console.log("Firmware:", firmwareVersion)
-      document.getElementById("log2").innerHTML += ", Version: " + firmwareVersion + "<br>"
-      document.getElementById("setup").hidden = false
-
-      let cmdParentElement = "commands";
-      function add_cmd(header, code) {
-        if (header != "") {
-          const b = document.createElement("button")
-          b.className = "btn btn-sm bg-light text-dark"
-          b.style.margin = "1px"
-          b.style.marginBottom = "2px"
-          b.id = header
-          b.innerHTML = header;
-          b.onclick = async () => {
-            await remoteSend(code)
-            await remoteReboot();
+          const mod = await import(blobUrl);
+          if (mod.destroy && gen === _routeGen) {
+            _currentCleanup = mod.destroy;
           }
-          document.getElementById(cmdParentElement).lastChild.appendChild(b)
-          return b
-        }
-        else {
-          const div = document.createElement("div")
-          div.className = "my-20"
-          document.getElementById(cmdParentElement).appendChild(div)
-        }
-      }
-      add_cmd("")
-      add_cmd("ENTER CALIBRATION", '0')
-      add_cmd("")
-
-      const settings = await remoteGetSettings();
-
-      add_cmd((settings["FLIP_180"] ? "☑" : "☐") + "FLIP_180", 'F')
-      add_cmd((settings["MAX_BRIGHTNESS"] ? "☑" : "☐") + "DISP_BRIGHTNESS", 'B')
-      add_cmd("")
-      if (idd.startsWith("04E")) {
-        add_cmd((settings["DAC_8564"] ? "☑" : "☐") + "DAC_8564 / " + (!settings["DAC_8564"] ? "☑" : "☐") + "DAC_8565", 'D')
-        add_cmd("")
-        add_cmd((!settings["SH1106_SSD1306"] ? "☑" : "☐") + "SH1106 / " + (settings["SH1106_SSD1306"] ? "☑" : "☐") + "SSD1306", '2')
-        add_cmd((!settings["DISPLAY_SPI1"] ? "☑" : "☐") + "DISPLAY_SPI / " + (settings["DISPLAY_SPI1"] ? "☑" : "☐") + "DISPLAY_SPI1", '1')
-      }
-
-      try {
-        if (showUpgrade) {
-
-          showEngines = true
-
-          document.getElementById('halfkay').innerHTML =
-            document.getElementById('upgrade').innerHTML
-
-          let upgradeButton = document.getElementById('upgradeButton')
-          upgradeButton.onclick = async () => {
-
-            document.getElementById("setup").hidden = true
-            document.getElementById("engines0").hidden = true
-            upgradeButton.disabled = true
-
-            // const firmware = await fetch("./firmware_full.bin")
-            // const firmwareBin = await firmware.arrayBuffer()
-            const firmware = await getFirmwareMemoryMap();
-            const firmwarePages = firmware.paginate(4096, 0xff)
-            let info = "Flashing firmware.bin"
-
-            let page = 0
-            let offset = null
-            const engineOffset = 1024 * 1024;
-            for (const entry of firmwarePages.entries()) {
-              if (offset == null) {
-                offset = entry[0]
-                break;
-              }
-            }
-            for (const entry of firmwarePages.entries()) {
-              const i = entry[0] - offset
-
-              if (i < engineOffset)
-                continue; //Erstmal die Engines
-
-              console.log("" + page + "/" + firmwarePages.size)
-              progress(page, firmwarePages.size, info + ", writing page 0x" + (i).toString(16) + "...")
-              await sendFLASHDATA( "0x" + (i).toString(16), entry[1]);
-
-              page++
-            }
-
-            for (const entry of firmwarePages.entries()) {
-              const i = entry[0] - offset
-
-              if (i >= engineOffset)
-                continue; //Jetzt die Firmware
-
-              console.log("" + page + "/" + firmwarePages.size)
-              progress(page, firmwarePages.size, info + ", writing page 0x" + (i).toString(16) + "...")
-              await sendFLASHDATA("0x" + (i).toString(16), entry[1]);
-
-              page++
-            }
-
-            await fetch(BACKEND + `/flash/app?${idd}~UPGRADE_${select.value}`)
-            await remoteReboot();
+          else if (mod.destroy) {
+            mod.destroy(); // the route was left while it loaded
           }
+        } finally {
+          URL.revokeObjectURL(blobUrl);
         }
-      }
-      catch (err) {
-        console.error(err)
-        document.getElementById("log2").innerHTML = `<div class="text-danger">${err}</div>`;
-      }
-
-      if (showEngines) {
-
-        add_cmd("")
-
-        add_cmd("FORMAT SD (keep patches)").onclick = async () => {
-          const ret = await formatSD(125)
-          console.log("FORMAT SD", ret[0])
-          await remoteReboot();
-        }
-
-        add_cmd("FORMAT SD (complete)").onclick = async () => {
-          const ret = await formatSD(124)
-          console.log("FORMAT SD", ret[0])
-          await remoteReboot();
-        }
-
-        document.getElementById("engines0").hidden = false
-        cmdParentElement = "engines"
-
-        add_cmd("")
-
-        add_cmd("BIN").onclick = async () => {
-
-          const loaded = await fileOpen(".bin", async (data, name) => {
-            const blob = name.split(".")[0].padEnd(8, '_').substring(0, 8)
-            console.log(blob, name.length, data)
-            await sendFLASHDATA(blob, data, progress);
-          }, true)
-
-          if (loaded)
-            await remoteReboot();
-        }
-
-        add_cmd("DXFM").onclick = async () => {
-
-          await fileOpen(".syx,.sysex", async syx => {
-            console.log(syx)
-            const data = new Uint8Array(syx.slice(6, 6 + 4096));
-            await sendFLASHDATA("DXFMSYX0", data, progress);
-            await remoteReboot();
-          })
-        }
-
-        add_cmd("FV1emu").onclick = async () => {
-
-          window.open("https://eh2k.github.io/%E2%96%A1%E2%97%8F/fx.html", '_blank').focus();
-        }
-
-        add_cmd("")
-
-        add_cmd("TR707").onclick = async () => {
-          const ic34 = await fetch("../roms/IC34_TR707_SNDROM.bin")
-          await sendFLASHDATA("707_IC34", await ic34.arrayBuffer(), progress);
-          const ic35 = await fetch("../roms/IC35_TR707_SNDROM.bin")
-          await sendFLASHDATA("707_IC35", await ic35.arrayBuffer(), progress);
-          await remoteReboot();
-        }
-
-        add_cmd("TR909").onclick = async () => {
-          const high = await fetch("../roms/909_HiHats.bin")
-          await sendFLASHDATA("909_HIGH", await high.arrayBuffer(), progress);
-          const ride = await fetch("../roms/909_Ride.bin")
-          await sendFLASHDATA("909_RIDE", await ride.arrayBuffer(), progress);
-          await remoteReboot();
-        }
-
+        console.debug(`[router] loaded: ${jsFile}`);
+      } catch (err) {
+        console.error(`[router] module error: ${jsFile}`, err);
       }
     }
-    await main();
+
+    window.addEventListener('hashchange', renderRoute);
+    renderRoute();
   </script>
 
-  <script src="../halfmoon.min.js"></script>
+  <script src="./vendor/bootstrap-5.3.3.bundle.min.js"></script>
 
 </body>
 

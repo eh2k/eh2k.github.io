@@ -1,0 +1,50 @@
+<div class="sc-main">
+  <h1 class="sc-title">Library</h1>
+  <div class="sc-grid">
+    <section class="panel">
+      <div class="panel-label">Flash memory</div>
+      <svg id="svgCanvas" aria-label="Flash memory map"></svg>
+      <div id="tooltip" class="xtooltip" style="display: none"></div>
+      <div id="summaryText" class="small mute"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-label">Extras</div>
+      <div id="extras"></div>
+    </section>
+  </div>
+
+  <section class="panel flush">
+    <div class="panel-head">
+      <span class="panel-label">Apps</span>
+      <div class="sc-filters" role="group" aria-label="Filter" id="app_filters">
+        <button class="btn on" data-filter="all" aria-pressed="true">All</button>
+        <button class="btn" data-filter="todo" aria-pressed="false">Updates</button>
+        <button class="btn" data-filter="installed" aria-pressed="false">Installed</button>
+        <button class="btn" data-filter="available" aria-pressed="false">Available</button>
+      </div>
+    </div>
+    <div class="sc-scroll">
+      <table class="sc-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th>CRC32</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="blobs">
+          <tr>
+            <td colspan="5" class="mute">Connect a module to read its apps.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel-foot">
+      <span class="mute small">Changed and new apps that fit, in one go; the module restarts afterwards.</span>
+      <button class="btn btn-accent" id="flash_all" disabled>Update all</button>
+    </div>
+  </section>
+
+</div>

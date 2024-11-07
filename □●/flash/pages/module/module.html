@@ -1,0 +1,32 @@
+<div class="sc-main">
+  <h1 class="sc-title">Module</h1>
+  <div class="sc-module-grid">
+    <section class="panel">
+      <div class="panel-label">Firmware</div>
+      <div>
+        <div class="small mute">installed</div>
+        <div class="value" id="currentVersion">–</div>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap">
+        <label class="sc-field" style="flex: 1 1 220px">update to
+          <select class="form-select" id="firmwares"></select>
+        </label>
+        <button class="btn btn-accent" id="upgradeButton">Flash/Update</button>
+      </div>
+      <div class="small mute">Only the pages that differ are written and checked afterwards; after a stop, the next
+        click writes the rest.</div>
+
+      <div class="sc-notes-head">
+        <span class="label">Release notes</span>
+        <a id="notes_link" class="small" target="_blank" rel="noopener">CHANGELOG.txt on GitHub</a>
+      </div>
+      <div id="notes_info" class="small mute"></div>
+      <div id="notes" class="sc-notes"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-label">Settings</div>
+      <div id="commands"></div>
+    </section>
+  </div>
+</div>

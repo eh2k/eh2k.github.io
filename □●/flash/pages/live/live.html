@@ -1,0 +1,51 @@
+<div class="sc-main">
+  <h1 class="sc-title">Live</h1>
+  <div class="sc-live-row">
+    <section class="panel sc-live-display">
+      <div class="panel-head">
+        <span class="panel-label">Display</span>
+        <span class="small mute mono">128 × 64 · click to enlarge</span>
+      </div>
+      <div class="sc-live-top">
+        <button class="sc-oled" id="oled" aria-label="Enlarge the display (Esc closes it)">
+          <canvas id="display" width="128" height="64" aria-label="The module's display"></canvas>
+        </button>
+        <div class="sc-live-keys">
+          <div class="label">keys</div>
+          <div id="remote" class="sc-cmds"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel sc-live-midi" id="midi">
+      <span class="panel-label">MIDI</span>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end">
+        <label class="sc-field">channel
+          <input class="form-control" type="number" min="1" max="16" value="1" id="midi_channel" />
+        </label>
+        <label class="sc-field">program
+          <input class="form-control" type="number" min="0" max="127" value="0" id="PROGRAM" />
+        </label>
+        <label class="sc-field" style="flex: 1 1 200px">pitch bend (double click: 0)
+          <input type="range" min="-1" max="1" value="0" step="0.01" id="PITCH" />
+        </label>
+      </div>
+      <div id="PIANO" class="sc-keys" role="group" aria-label="Keyboard"></div>
+      <div class="label">controller</div>
+      <div class="sc-faders">
+        <label class="sc-fader"><span class="v">64</span><input type="range" min="0" max="127" value="64" id="CC16" /><span class="n">CC16</span></label>
+        <label class="sc-fader"><span class="v">64</span><input type="range" min="0" max="127" value="64" id="CC17" /><span class="n">CC17</span></label>
+        <label class="sc-fader"><span class="v">64</span><input type="range" min="0" max="127" value="64" id="CC18" /><span class="n">CC18</span></label>
+        <label class="sc-fader"><span class="v">64</span><input type="range" min="0" max="127" value="64" id="CC19" /><span class="n">CC19</span></label>
+        <label class="sc-fader"><span class="v">64</span><input type="range" min="0" max="127" value="64" id="CC20" /><span class="n">CC20</span></label>
+        <label class="sc-fader"><span class="v">64</span><input type="range" min="0" max="127" value="64" id="CC21" /><span class="n">CC21</span></label>
+        <label class="sc-fader"><span class="v">64</span><input type="range" min="0" max="127" value="64" id="CC22" /><span class="n">CC22</span></label>
+        <label class="sc-fader"><span class="v">64</span><input type="range" min="0" max="127" value="64" id="CC23" /><span class="n">CC23</span></label>
+        <label class="sc-fader"><span class="v">64</span><input type="range" min="0" max="127" value="64" id="pan" /><span class="n">Pan</span></label>
+        <label class="sc-fader"><span class="v">64</span><input type="range" min="0" max="127" value="64" id="volume" /><span class="n">Volume</span></label>
+      </div>
+      <div class="sc-cmds"><button class="btn" id="midi_rand">RANDOM PROG CHANGES</button><span id="midi_rand_info" class="small mute mono"></span></div>
+    </section>
+  </div>
+
+</div>

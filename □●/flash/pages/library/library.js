@@ -1,0 +1,1 @@
+import{remoteUsbInit}from"../../js/remoteBulk.js";import{initApps,destroyApps}from"./apps.js";import{initExtras}from"./extras.js";function destroy(){destroyApps()}async function htmlInit(t){null!=t&&(initExtras(document.getElementById("extras")),await initApps(t).catch(t=>console.error(t)))}remoteUsbInit(null,htmlInit);export{destroy};

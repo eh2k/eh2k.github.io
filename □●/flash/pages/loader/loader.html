@@ -1,0 +1,52 @@
+<div class="sc-main">
+  <div>
+    <div class="label">First installation</div>
+    <h1 class="sc-title">Install the S&amp;C loader</h1>
+    <p class="mute" style="margin: 8px 0 0; max-width: 780px">A bare Teensy needs the S&amp;C loader firmware first. This works
+      in the browser (Chrome or Edge). With the loader, or an older S&amp;C firmware, on the module: connect it and
+      update on <a href="#module">Module</a>.</p>
+  </div>
+
+  <div class="sc-steps" id="halfkay">
+    <section class="panel sc-step" id="step_usb">
+      <div class="num">1</div>
+      <div class="body">
+        <div class="title">Connect the Teensy over USB</div>
+        <div class="mute">Directly to the computer, not over a passive hub.</div>
+      </div>
+    </section>
+
+    <section class="panel sc-step active" id="step_reset">
+      <div class="num">2</div>
+      <div class="body">
+        <div class="title">Reset</div>
+        <div class="mute">Pick the Teensy in the browser's dialog. If no device is listed, the Teensy is likely in its
+          flashing mode already: go on with step 3.</div>
+        <div><button class="btn btn-accent" id="resetButton">Reset</button></div>
+      </div>
+    </section>
+
+    <section class="panel sc-step" id="step_flash">
+      <div class="num">3</div>
+      <div class="body">
+        <div class="title">Flash the loader</div>
+        <div class="mute">Pick "HID 16C0:0478" in the browser's dialog. If no device is listed, press the button on
+          the Teensy and click Flash again.</div>
+        <div class="warn small">Make sure the Teensy Loader is not running in the background.</div>
+        <div><button class="btn btn-accent" id="flashButton">Flash</button></div>
+      </div>
+    </section>
+
+    <section class="panel sc-step" id="step_done">
+      <div class="num">4</div>
+      <div class="body">
+        <div class="title">Ready to update</div>
+        <div class="mute">The module starts with the splash screen and a blinking "Ready to Update". Connect it and
+          install firmware and apps on <a href="#module">Module</a>.</div>
+      </div>
+    </section>
+  </div>
+
+  <p class="small mute" style="margin: 0">Without WebHID: download the <a id="downloadLoader">S&amp;C loader hex file</a>
+    and flash it with the <a href="https://www.pjrc.com/teensy/loader.html">Teensy Loader</a>.</p>
+</div>

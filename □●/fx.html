@@ -14,6 +14,7 @@
   <meta charset="utf-8">
   <!-- Meta tags -->
   <meta charset="utf-8" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
   <meta name="viewport" content="width=device-width" />
@@ -23,7 +24,7 @@
   <script src="./webmidi.iife.js"></script>
 </head>
 
-<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true"
+<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true" hidden
   data-sidebar-shortcut-enabled="true" data-set-preferred-mode-onload="true">
 
 
@@ -35,6 +36,9 @@
       <a href="#" class="navbar-brand">
         <p>□● FX-Compiler</p>
       </a>
+      <div class="navbar-content ml-auto">
+        <div id="user"></div>
+      </div>
     </nav>
   </div>
 
@@ -95,20 +99,27 @@
         sendFLASHDATA,
         crc32_from_uint8buffer,
         fileOpen,
-      } from "https://eh2k.spdns.org/eh2k_github_io/remote.js?10";
+      } from "./remote.js?10";
+
+      import {
+        auth,
+      } from "./auth.js?4";
 
       const BACKEND = "https://eh2k.spdns.org/squares-and-circles-fx"
 
-      try {
-        var udd = await remoteInit(document.getElementById("log"))
-        document.getElementById("format").disabled = false
-        document.getElementById("compile").disabled = false
-      }
-      catch (err) {
-
-      }
-
       async function main() {
+
+        const session = await auth();
+        if (session) {
+          // document.getElementById("user").innerHTML =
+          //   `<a href="https://github.com/settings/connections/applications/${session.clientID}">
+          //     <img src="${session.avatar_url}" width="32px"/>
+          //   </a>`;
+          document.getElementById("user").innerHTML = `<img src="${session.avatar_url}" width="32px"/>`;
+          document.body.hidden = false;
+        }
+        else
+          return;
 
         const urlParams = new URLSearchParams(window.location.search);
         let spn_json = urlParams.get('json');
@@ -117,6 +128,17 @@
         } else {
           document.location = window.location.search = `?json=https://github.com/eh2k/squares-and-circles/blob/main/lib/fv1/factory.json`
           return
+        }
+
+        try {
+          var udd = await remoteInit(document.getElementById("log"))
+          if (udd != "") {
+            document.getElementById("format").disabled = false
+            document.getElementById("compile").disabled = false
+          }
+        }
+        catch (err) {
+
         }
 
         let bank = null
@@ -151,8 +173,9 @@
 
         try {
           let link = document.getElementById("spn").value;
-          link = link.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
-          const json = await fetch(link);
+          if (link.includes("github.com") && link.includes("/blob/"))
+            link = link.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/");
+          const json = await fetch(`https://eh2k.spdns.org/curl?url=${link}`);
           if (!json.ok)
             throw `fetch err: ${json.status}`;
           loadBank(await json.json())

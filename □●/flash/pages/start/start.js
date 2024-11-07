@@ -1,0 +1,1 @@
+import{remoteUsbInit}from"../../js/remoteBulk.js";function htmlInit(t){if(t&&(""==location.hash||"#home"==location.hash)){let t=null;try{t=sessionStorage.getItem("sc_wanted"),sessionStorage.removeItem("sc_wanted")}catch(t){}location.hash="#"+(t||"module")}}document.getElementById("hero_connect").onclick=()=>document.getElementById("connect").click(),remoteUsbInit(null,htmlInit);
