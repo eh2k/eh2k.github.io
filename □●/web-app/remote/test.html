@@ -1,0 +1,68 @@
+<button onclick="connect()">Connect</button>
+<button onclick="send()">Send</button>
+<script>
+    let device;
+
+    async function connect() {
+        device = await navigator.usb.requestDevice({
+            filters: [{ vendorId: 0x16C0 }] // Teensy VID (example)
+        });
+
+        await device.open();
+
+        await device.selectConfiguration(1)
+
+        console.log(device.configuration)
+
+        if (device.configuration === null) {
+            await device.selectConfiguration(1);
+        }
+
+        await device.claimInterface(3); // must match your interface number
+
+        // await device.controlTransferOut({
+        //     requestType: 'class',
+        //     recipient: 'interface',
+        //     request: 0x22,
+        //     value: 0x01,
+        //     index: 0x02
+        // })
+
+        readLoop();
+    }
+
+    function str2bytes(s) {
+        const charCodeArr = [];
+
+        for (let i = 0; i < s.length; i++) {
+            const code = s.charCodeAt(i);
+            charCodeArr.push(code);
+        }
+
+        charCodeArr.push(0);
+
+        return Uint8Array.from(charCodeArr);
+    }
+
+    async function send() {
+        const data0 = str2bytes("Command1234567890");
+        const data = new Uint8Array(512);
+        data.set(data0, 0);
+        let result = await device.transferOut(5, data);
+    }
+
+    async function readLoop() {
+        while (true) {
+            let result = await device.transferIn(5, 512); // endpoint 3 IN
+            console.log("result", result);
+            if (result.status === "ok") {
+                let data = new Uint8Array(result.data.buffer);
+                // Process or append to file
+                console.log(new TextDecoder().decode(data))
+            } else {
+                console.error("Transfer error", result.status);
+                break;
+            }
+        }
+    }
+</script>

@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en" data-bs-core="modern" data-bs-theme="dark">
+
+<style>
+</style>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Meta tags -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+
+  <link href="https://cdn.jsdelivr.net/npm/halfmoon@2.0.2/css/halfmoon.min.css" rel="stylesheet" />
+  <script src="./index.js" type="module"></script>
+  <!-- CDN deps (wavesurfer, js-yaml) are lazy-loaded per route -->
+</head>
+
+<body style="padding-left: 220px;">
+
+  <nav class="navbar bg-body-tertiary navbar-expand-md border-bottom border-opacity-25" style="height: 60px;">
+    <div class="container-fluid">
+      <a class="navbar-brand fs-5" href=".">
+      </a>
+      <div class="hstack btn-group position-absolute top-50 start-10 translate-middle-y" role="group">
+        <a class="btn btn-secondary" href="#update" class="btn btn-dark">Update</a>
+        <a class="btn btn-secondary" href="#engines" class="btn btn-dark">Engines</a>
+        <a class="btn btn-secondary" href="#drumsynth" class="btn btn-dark">DrumSynth</a>
+        <a class="btn btn-secondary" href="#fv1emu" class="btn btn-dark">FV1emu</a>
+        <!-- <a class="btn btn-secondary" href="#dxfm" class="btn btn-dark">DXFM</a>
+        <a class="btn btn-secondary" href="#debug" class="btn btn-dark">Debug</a> -->
+      </div>
+      <div class="hstack gap-2">
+        <div class="hstack gap-2"></div>
+        <!-- <div class="vr ms-auto"></div> -->
+        <div id="user"></div>
+      </div>
+  </nav>
+
+  <nav class="sidebar offcanvas-start offcanvas-md" style="max-width: 220px;">
+    <div class="offcanvas-header fs-5 border-bottom border-opacity-25">
+      <a class="sidebar-brand" href="#home">
+        □● WebFlasher
+      </a>
+    </div>
+    <div class="offcanvas-body">
+      <button class="btn btn-secondary" id="connect">connect</button>
+      <ul class="sidebar-nav">
+        <a data-bs-toggle="modal" href="#select-target">
+          <img id="img_module" src="../flash/u_oc.png" style="width: 100%;" />
+        </a>
+      </ul>
+    </div>
+  </nav>
+
+  <div>
+    <div class="modal fade" id="flashing" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modal-title-1">
+              <div id="log2"></div>
+            </h1>
+          </div>
+          <div class="modal-body">
+            <progress id="progress" value="0" max="100" style="width: 100%;" hidden></progress>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalConnect" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modal-title-1">
+              □●
+            </h1>
+          </div>
+          <div class="modal-body">
+            No S&C devices connected.
+          </div>
+          <div class="modal-footer">
+            <a href="loader.html" class="btn btn-secondary btn-lg">Flash Loader</a>
+            <button class="btn btn-light btn-lg" id="connectButton">Retry</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="select-target" tabindex="-1" aria-labelledby="modal-title-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modal-title-1">Set target device:</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <a href="?target=OC_T40">O_C_T4.0</a><br />
+            <a href="?target=OC_T41">O_C_T4.1</a><br />
+            <a href="?target=SC_DSM0">SC_DSM0</a><br />
+          </div>
+          <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save</button>
+        </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="app"></main>
+
+  <script type="module">
+
+    // --- SPA Router with dynamic import() ---
+    // Uses dynamic import() for proper ES module loading:
+    //   - Modules appear in DevTools Sources panel with correct names
+    //   - Breakpoints and source maps work reliably
+    //   - Stack traces show actual call sites
+    //   - Proper async error handling via try/catch
+
+    const routes = {
+      home:      { html: '../flash/loader.html' },
+      update:    { html: '../flash/update.html' },
+      engines:   { html: '../remote/flashdrive.html' },
+      drumsynth: {
+        html: '../drumsynth/index.html',
+        deps: [
+          'https://cdn.jsdelivr.net/npm/wavesurfer.js@7.8.14/dist/wavesurfer.min.js',
+          'https://cdn.jsdelivr.net/npm/wavesurfer.js@7.8.14/dist/plugins/spectrogram.min.js',
+          'https://cdn.jsdelivr.net/npm/wavesurfer.js@7.8.14/dist/plugins/envelope.min.js',
+          'https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js',
+        ]
+      },
+      fv1emu:    { html: '../FV1emu/index.html' },
+      dxfm:      { html: '../dxfm/index.html' },
+      debug:     { html: '../remote/debug.html' },
+    };
+
+    // Lazy script loader — loads CDN scripts on-demand, once per session
+    const _loadedScripts = new Set();
+    function loadScript(url) {
+      if (_loadedScripts.has(url)) return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = url;
+        s.onload = () => { _loadedScripts.add(url); resolve(); };
+        s.onerror = () => reject(new Error(`Failed to load: ${url}`));
+        document.head.appendChild(s);
+      });
+    }
+
+    let _currentCleanup = null;
+    let _routeGen = 0;
+    let _currentRouteKey = null;
+
+    async function renderRoute() {
+      const key = location.hash.replace('#', '') || 'home';
+      const route = routes[key] || routes.home;
+
+      // Strip query params only when switching to a different route
+      if (key !== _currentRouteKey && location.search) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("code")) {
+          history.replaceState({}, '', location.pathname + "?code=" + urlParams.get("code") + location.hash);
+        } else {
+          history.replaceState({}, '', location.pathname + location.hash);
+        }
+      }
+      _currentRouteKey = key;
+
+      // Cleanup previous route module (if it exported a destroy function)
+      if (_currentCleanup) {
+        try { _currentCleanup(); } catch (e) { console.warn('[router] cleanup error:', e); }
+        _currentCleanup = null;
+      }
+
+      // Fetch and inject HTML fragment
+      try {
+        const res = await fetch(route.html);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        // Parse with DOMParser to cleanly extract body content from
+        // both full HTML documents and plain fragments
+        const doc = new DOMParser().parseFromString(text, 'text/html');
+        document.getElementById('app').innerHTML = doc.body.innerHTML;
+      } catch (err) {
+        console.error('[router] page load error:', err);
+        document.getElementById('app').innerHTML =
+          `<div class="alert alert-danger m-3">Failed to load page: ${err.message}</div>`;
+        return;
+      }
+
+      document.getElementById("connect").onclick = null;
+      document.getElementById("connect").disabled = true;
+
+      // Lazy-load route-specific CDN dependencies (sequential for dependency order)
+      if (route.deps) {
+        try {
+          for (const dep of route.deps) await loadScript(dep);
+        } catch (err) {
+          console.error('[router] dependency load error:', err);
+        }
+      }
+
+      // Load route module via dynamic import()
+      // Uses Blob + sourceURL so Chrome DevTools maps breakpoints to the real file,
+      // while the unique blob URL forces re-evaluation on each route visit.
+      // Relative imports are resolved to absolute URLs so they work from blob: context.
+      const jsFile = route.html.replace('.html', '.js');
+      const jsUrl = new URL(jsFile, location.href).href;
+      const jsBase = jsUrl.substring(0, jsUrl.lastIndexOf('/') + 1);
+      const gen = ++_routeGen;
+      try {
+        const resp = await fetch(jsUrl);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        let source = await resp.text();
+        // Rewrite relative import specifiers (from/import/side-effect) to absolute URLs
+        // so they resolve correctly from the blob: origin
+        source = source.replace(
+          /(from\s*['"]|import\s*\(\s*['"]|import\s*['"])(\.\.?\/[^'"]+)(['"])/g,
+          (_, prefix, relPath, quote) => prefix + new URL(relPath, jsBase).href + quote
+        );
+        const blob = new Blob(
+          [source + `\n//# sourceURL=${jsUrl}\n`],
+          { type: 'text/javascript' }
+        );
+        const blobUrl = URL.createObjectURL(blob);
+        try {
+          const mod = await import(blobUrl);
+          if (mod.destroy && gen === _routeGen) {
+            _currentCleanup = mod.destroy;
+          }
+        } finally {
+          URL.revokeObjectURL(blobUrl);
+        }
+        console.debug(`[router] loaded: ${jsFile}`);
+      } catch (err) {
+        console.error(`[router] module error: ${jsFile}`, err);
+      }
+    }
+
+    window.addEventListener('hashchange', renderRoute);
+    renderRoute();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha256-CDOy6cOibCWEdsRiZuaHf8dSGGJRYuBGC+mjoJimHGw=" crossorigin="anonymous"></script>
+
+</body>
+
+</html>

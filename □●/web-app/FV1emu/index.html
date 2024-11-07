@@ -1,0 +1,45 @@
+<div class="content-wrapper">
+  <div class="container-fluid">
+    <div>
+      <div style="height:10px">
+      </div>
+      <div class="col-auto hstack gap-4">
+        <div class="vstack">
+          <div>
+            <div class="hstack gap-4">
+              <div class="form-floating mb-3">
+                <select type="text" class="form-control" id="spn"></select>
+                <label for="spn">FX-JSON</label>
+                <!-- <div class="col-0">&nbsp;</div>
+                  <button id="load" class="col-0 btn-light btn">Load</button> -->
+              </div>
+              <a href="https://github.com/eh2k/squares-and-circles/issues/58">Learn more</a>
+              <button id="compile" class="btn btn-primary" disabled="true">Flash</button>
+            </div>
+          </div>
+          <div class="container">
+            <div>
+              <div class="row align-items-start" id="bank_header">
+                <label class="col form-label">Name</label>
+                <label class="col form-label">P1</label>
+                <label class="col form-label">P2</label>
+                <label class="col form-label">P3</label>
+                <label class="col-auto form-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+              </div>
+            </div>
+            <div id="bank">
+              <div class="row align-items-start" hidden>
+                <input type="text" class="col form-control" value="FX" placeholder="Name">
+                <input type="text" class="col form-control" value="P1" placeholder="ParamA">
+                <input type="text" class="col form-control" value="P2" placeholder="ParamB">
+                <input type="text" class="col form-control" value="P3" placeholder="ParamB">
+                <div class="col-auto">
+                  <button type="button" class="btn btn-sm">□●</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

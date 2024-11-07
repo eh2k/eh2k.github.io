@@ -6,6 +6,13 @@
     height: 60vh;
     object-fit: fill;
   }
+
+  :root,
+  [data-bs-theme=dark] {
+    color-scheme: dark;
+    --bs-body-color: #c9d1d9;
+    --bs-body-bg: #212529;
+  }
 </style>
 
 <head>
@@ -16,14 +23,11 @@
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
   <meta name="viewport" content="width=device-width" />
 
-  <link href="../halfmoon-variables.min.css" rel="stylesheet" />
-
-  <script src="../webmidi.iife.v3.1.8.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/webmidi@3.1.11/dist/iife/webmidi.iife.min.js"></script> -->
+  <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/css/halfmoon-variables.min.css" rel="stylesheet" />
 
 </head>
 
-<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true"
+<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true" hidden
   data-sidebar-shortcut-enabled="true" data-set-preferred-mode-onload="true">
 
 
@@ -44,6 +48,7 @@
       <div class="navbar-content ml-auto">
         <select class="form-control" id="firmwares" style="align-self: center; width: auto"></select>
         <select class="form-control" id="midi_targets" style="align-self: center; width: auto"></select>
+        <div id="user"></div>
       </div>
     </nav>
 
@@ -88,7 +93,6 @@
 
           <div class="card m-5" id="upgrade" hidden>
             <button class="btn bg-light text-dark" id="upgradeButton">Flash/Update</button>
-            <div id="transmitInfo"></div>
           </div>
 
           <div id="setup" class="col card m-5 " hidden>
@@ -115,15 +119,19 @@
 
   <script type="module">
 
+    import {
+      auth,
+    } from "../auth.js?5";
 
     import {
       BACKEND,
       getFirmwareMemoryMap,
       fetchAvailableFirmwares,
       loadFirmware,
-      teensyBootloader
+      teensyBootloader,
+      getLoaderUrl
     }
-      from "https://eh2k.spdns.org/eh2k_github_io/flash/teensy_loader_v1.js?12";
+      from "../flasher.js?21";
 
     import {
       remoteInit,
@@ -135,7 +143,9 @@
       remoteGetSettings,
       sendFLASHDATA,
       fileOpen,
-    } from "https://eh2k.spdns.org/eh2k_github_io/flash/../remote.js?15";
+      crc32_from_uint8buffer,
+    } from "../remote.js?17";
+
 
     window.onerror = async function (message, source, lineno, colno, error) {
       await fetch(BACKEND + `/flash/err?ts=${new Date().getTime()}&msg=${message}&src=${source}&lno=${lineno}&err=${error}`)
@@ -144,13 +154,25 @@
 
     async function main() {
 
+      const session = await auth();
+      if (session) {
+        // document.getElementById("user").innerHTML =
+        //   `<a href="https://github.com/settings/connections/applications/${session.clientID}">
+        //     <img src="${session.avatar_url}" width="32px"/>
+        //   </a>`;
+        document.getElementById("user").innerHTML = `<img src="${session.avatar_url}" width="32px"/>`;
+        document.body.hidden = false;
+      }
+      else
+        return;
+
       document.getElementById("setup").hidden = false
       document.getElementById("log2").innerHTML = ""
 
       var idd = ""
 
       try {
-        idd = await remoteInit(document.getElementById("log2"))
+        idd = await remoteInit(document.getElementById("log2")) || new URLSearchParams(location.search).get("debug") || ""
       }
       catch (err) {
         console.error(err)
@@ -163,7 +185,7 @@
       select.onchange = () => {
         if (select.value) {
           const args = new URLSearchParams(select.value.split("?")[1]);
-          const hash = args.get("v");
+          const hash = args.get("v") || select.options[select.selectedIndex].text
           const url = upgradeButton.href = BACKEND + "/flash/" + select.value;
           document.getElementById("firmware").innerText = `FIRMWARE - ${hash}`
         }
@@ -207,11 +229,6 @@
       var showUpgrade = false
 
       const urlParams = new URLSearchParams(window.location.search);
-      let sha = urlParams.get('sha');
-      if (sha)
-        sha = `&sha=${sha}`
-      else
-        sha = ""
       const select0 = urlParams.get('select');
       if (select0)
         sha += `&select=${select0}`
@@ -225,30 +242,23 @@
 
         const deviceId = urlParams.get('deviceId');
         if (deviceId != idd) {
-          document.location = window.location.search = `?target=SC_DSM0&deviceId=${idd}&transmit_delay=1&transmit_frame=16${sha}`
-          return
+          urlParams.set('target', 'SC_DSM0');
+          urlParams.set('deviceId', idd);
+          urlParams.set('transmit_delay', 1);
+          urlParams.set('transmit_frame', 16);
+          history.pushState({}, null, "?" + urlParams);
         }
-
-        const transmit_delay = urlParams.get('transmit_delay');
-        const transmit_frame = urlParams.get('transmit_frame');
-        document.getElementById("transmitInfo").innerHTML = `<br/>transmit_delay: ${transmit_delay}<br/>transmit_frame: ${transmit_frame}`
-      }
-      else if (idd.startsWith("AF4")) {
-        //TempUtile
-        const ver = urlParams.get('ver');
-        if (ver != "firmware_TU_T32_latest") {
-          document.location = window.location.search = `?target=TU_T32&deviceId=${idd}&transmit_delay=1&transmit_frame=16${sha}`
-          return
-        }
-        enableUpgrade = false;
       }
       else if (idd.startsWith("04E")) {
         document.getElementById("img_module").hidden = false
         document.getElementById("img_module").src = "u_oc.png"
         const deviceId = urlParams.get('deviceId');
         if (deviceId != idd) {
-          document.location = window.location.search = `?target=OC_T40&deviceId=${idd}&transmit_delay=1&transmit_frame=64${sha}`
-          return
+          urlParams.set('target', 'OC_T40');
+          urlParams.set('deviceId', idd);
+          urlParams.set('transmit_delay', 1);
+          urlParams.set('transmit_frame', 64);
+          history.pushState({}, null, "?" + urlParams);
         }
       }
       else if (idd.startsWith("14E")) {
@@ -256,11 +266,18 @@
         document.getElementById("img_module").src = "oc_t41.jpg"
         const deviceId = urlParams.get('deviceId');
         if (deviceId != idd) {
-          document.location = window.location.search = `?target=OC_T41&deviceId=${idd}&transmit_delay=1&transmit_frame=64${sha}`
-          return
+          urlParams.set('target', 'OC_T41');
+          urlParams.set('deviceId', idd);
+          urlParams.set('transmit_delay', 1);
+          urlParams.set('transmit_frame', 64);
+          history.pushState({}, null, "?" + urlParams);
         }
       }
       else {
+        const target = urlParams.get('target');
+        if (target == "OC_T41") {
+          document.getElementById("img_module").src = "oc_t41.jpg"
+        }
         document.getElementById("img_module").hidden = false;
         select.style.visibility = "hidden"
         const midi_targets = document.getElementById("midi_targets");
@@ -270,9 +287,9 @@
 
 <p><b>The flashing process</b></p>
 
-<p style="text-decoration: underline;">Stage 1:  Flashing Squares&Circles Loader</p><p>For a bare Teensy 4.0, the loader firmware must be installed first. 
+<p style="text-decoration: underline;">Stage 1:  Flashing Squares&Circles Loader</p><p>For a bare Teensy, the loader firmware must be installed first. 
 This can be done directly in your browser (tested with Chrome) following the steps on the left side. 
-</p><p>If your broswer is not supporting the serial interface, you can download the <a href="https://github.com/eh2k/squares-and-circles/releases/download/0.0.0/squares-and-circles-teensy4XX-loader.hex">Squares&Circles loader hex file</a> and flash it with the Teensy Loader. 
+</p><p>If your broswer is not supporting the serial interface, you can download the <a href="${await getLoaderUrl()}">Squares&Circles loader hex file</a> and flash it with the Teensy Loader. 
 After flashing the loader the device startups only showing the splash screen with a blinking "Ready to Update".</p>
 
 <p style="text-decoration: underline;">Stage 2:  Flashing Updates + Machines/Engines</p><p>If the Squares&Circles device is connected to your PC, i.e. the loader or an older version has already been installed, 
@@ -334,6 +351,9 @@ it is automatically recognized via <a href="https://studiocode.dev/check-webmidi
         add_cmd((!settings["SH1106_SSD1306"] ? "☑" : "☐") + "SH1106 / " + (settings["SH1106_SSD1306"] ? "☑" : "☐") + "SSD1306", '2')
         add_cmd((!settings["DISPLAY_SPI1"] ? "☑" : "☐") + "DISPLAY_SPI / " + (settings["DISPLAY_SPI1"] ? "☑" : "☐") + "DISPLAY_SPI1", '1')
       }
+      if (idd.startsWith("14E")) {
+        add_cmd((!settings["SH1106_SSD1306"] ? "☑" : "☐") + "SH1106 / " + (settings["SH1106_SSD1306"] ? "☑" : "☐") + "SSD1306", '2')
+      }
 
       try {
         if (showUpgrade) {
@@ -353,45 +373,43 @@ it is automatically recognized via <a href="https://studiocode.dev/check-webmidi
             // const firmware = await fetch("./firmware_full.bin")
             // const firmwareBin = await firmware.arrayBuffer()
             const firmware = await getFirmwareMemoryMap();
+
+            // const hex = firmware.asHexString();
+            // const url = URL.createObjectURL(new Blob([hex], { type: "text/plain" }));
+
+            // const a = document.createElement("a");
+            // a.href = url;
+            // a.download = "firmware.hex";
+            // a.click();
+            // return null;
+
             const firmwarePages = firmware.paginate(4096, 0xff)
-            let info = "Flashing firmware.bin"
+            let info = "Flashing firmware..."
 
             let page = 0
             let offset = null
-            const engineOffset = 1024 * 1024;
+
             for (const entry of firmwarePages.entries()) {
               if (offset == null) {
                 offset = entry[0]
                 break;
               }
             }
-            for (const entry of firmwarePages.entries()) {
-              const i = entry[0] - offset
-
-              if (i < engineOffset)
-                continue; //Erstmal die Engines
-
-              console.log("" + page + "/" + firmwarePages.size)
-              progress(page, firmwarePages.size, info + ", writing page 0x" + (i).toString(16) + "...")
-              await sendFLASHDATA( "0x" + (i).toString(16), entry[1]);
-
-              page++
-            }
 
             for (const entry of firmwarePages.entries()) {
               const i = entry[0] - offset
 
-              if (i >= engineOffset)
-                continue; //Jetzt die Firmware
+              const crc32_sector = crc32_from_uint8buffer(entry[1]).toString(16);
 
-              console.log("" + page + "/" + firmwarePages.size)
               progress(page, firmwarePages.size, info + ", writing page 0x" + (i).toString(16) + "...")
-              await sendFLASHDATA("0x" + (i).toString(16), entry[1]);
+
+              console.log(i.toString(16), "" + page + "/" + firmwarePages.size)
+              await sendFLASHDATA("0x" + i.toString(16), entry[1]);
 
               page++
             }
 
-            await fetch(BACKEND + `/flash/app?${idd}~UPGRADE_${select.value}`)
+            await fetch(BACKEND + `/flash/app?~UPGRADE_${select.value}&deviceId=${idd}&user=${session.gh_user}&at=${new Date().toISOString()}`)
             await remoteReboot();
           }
         }
@@ -422,17 +440,17 @@ it is automatically recognized via <a href="https://studiocode.dev/check-webmidi
 
         add_cmd("")
 
-        add_cmd("BIN").onclick = async () => {
+        // add_cmd("BIN").onclick = async () => {
 
-          const loaded = await fileOpen(".bin", async (data, name) => {
-            const blob = name.split(".")[0].padEnd(8, '_').substring(0, 8)
-            console.log(blob, name.length, data)
-            await sendFLASHDATA(blob, data, progress);
-          }, true)
+        //   const loaded = await fileOpen(".bin", async (data, name) => {
+        //     const blob = name.split(".")[0] //.padEnd(8, '_').substring(0, 8)
+        //     console.log(blob, name.length, data)
+        //     await sendFLASHDATA(blob, data, progress);
+        //   }, true)
 
-          if (loaded)
-            await remoteReboot();
-        }
+        //   if (loaded)
+        //     await remoteReboot();
+        // }
 
         add_cmd("DXFM").onclick = async () => {
 
@@ -446,20 +464,28 @@ it is automatically recognized via <a href="https://studiocode.dev/check-webmidi
 
         add_cmd("FV1emu").onclick = async () => {
 
-          window.open("https://eh2k.github.io/%E2%96%A1%E2%97%8F/fx.html", '_blank').focus();
+          window.open("../FV1emu/", '_blank').focus();
+        }
+
+        add_cmd("DrumSynth/RC-808").onclick = async () => {
+          window.open("../drumsynth/", '_blank').focus();
         }
 
         add_cmd("")
 
-        add_cmd("TR707").onclick = async () => {
+        add_cmd("TR707 ROMS").onclick = async () => {
           const ic34 = await fetch("../roms/IC34_TR707_SNDROM.bin")
           await sendFLASHDATA("707_IC34", await ic34.arrayBuffer(), progress);
           const ic35 = await fetch("../roms/IC35_TR707_SNDROM.bin")
           await sendFLASHDATA("707_IC35", await ic35.arrayBuffer(), progress);
+          const ic19 = await fetch("../roms/707_IC19_CRASH.bin")
+          await sendFLASHDATA("707_IC19", await ic19.arrayBuffer(), progress);
+          const ic22 = await fetch("../roms/707_IC22_RIDE.bin")
+          await sendFLASHDATA("707_IC22", await ic22.arrayBuffer(), progress);
           await remoteReboot();
         }
 
-        add_cmd("TR909").onclick = async () => {
+        add_cmd("TR909 ROMS").onclick = async () => {
           const high = await fetch("../roms/909_HiHats.bin")
           await sendFLASHDATA("909_HIGH", await high.arrayBuffer(), progress);
           const ride = await fetch("../roms/909_Ride.bin")
@@ -467,12 +493,19 @@ it is automatically recognized via <a href="https://studiocode.dev/check-webmidi
           await remoteReboot();
         }
 
+        add_cmd("RZ-1 ROMS").onclick = async () => {
+          const high = await fetch("../roms/RZ1_ROMA.bin")
+          await sendFLASHDATA("RZ1_ROMA", await high.arrayBuffer(), progress);
+          const ride = await fetch("../roms/RZ1_ROMB.bin")
+          await sendFLASHDATA("RZ1_ROMB", await ride.arrayBuffer(), progress);
+          await remoteReboot();
+        }
       }
     }
     await main();
   </script>
 
-  <script src="../halfmoon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/js/halfmoon.min.js"></script>
 
 </body>
 

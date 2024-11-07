@@ -1,0 +1,71 @@
+<page>
+  <div class="page-wrapper with-navbar" data-sidebar-type="overlayed-sm-and-down">
+
+    <div class="content-wrapper">
+      <div class="container-fluid">
+        <div>
+          <div class="vstack">
+            <div style="height:10px">
+            </div>
+            <div class="hstack gap-2">
+              <div class="col-auto" id="commands"></div>
+              <div class="col">
+                <strong>Flash Memory</strong>
+                <svg id="svgCanvas" style="width:100%;height:60px"></svg>
+                <div style="height:40px">
+                  <div id="tooltip" class="xtooltip" style="display:hidden;"></div>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div>
+                  <div class="box"><strong>Flash Summary</strong>
+                    <div id="summaryText"></div>
+                  </div>
+                </div>
+              </div class="col-auto">
+            </div>
+          </div>
+          <div class="hstack gap-2" hidden>
+            <div class="col-auto">
+              <div class="input-group">
+                <input type="file" class="form-control" id="file_select">
+                <button class="input-group-text" for="flash_blob" id="file_flash" disabled>Flash</button>
+              </div>
+            </div>
+            <button class="btn btn-primary" id="flash_all">FLASH</button>
+          </div>
+          <div class="hstack gap-2">
+            <div class="col">
+              <div class="ycard">
+                <table class="table table-no-outer-padding">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>CRC32</th>
+                      <th>SIZE</th>
+                      <th class="text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="blobs">
+                    <tr>
+                      <td>A</td>
+                      <td>B</td>
+                      <td>C</td>
+                      <td class="text-right">D</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- <script src="./flashdrive.js" type="module"> </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha256-CDOy6cOibCWEdsRiZuaHf8dSGGJRYuBGC+mjoJimHGw=" crossorigin="anonymous"></script> -->
+
+</page>

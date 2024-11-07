@@ -1,0 +1,67 @@
+<div class="content-wrapper">
+  <div class="container-fluid">
+    <div class="row justify-content-md" style="height:10px">
+    </div>
+    <div class="row justify-content-md">
+      <div class="col-auto hstack gap-4">
+        <!-- <a data-bs-toggle="modal" href="#select-target">
+            <img hidden id="img_module" src="u_oc.png" style="height: 580px;" />
+          </a> -->
+        <div class="vstack gap-2">
+          <div>
+            <h6 id="firmware" class="content-title my-5" hidden>FIRMWARE</a></h6>
+
+            <h4>Flashing Squares&Circles</h4>
+
+            <p>For a bare Teensy, the S&C loader firmware must be installed first.
+              This can be done directly in your browser (tested with Chrome) following this steps:
+            </p>
+
+            <h6 id="loader" class="content-title my-5" hidden>Stage 1: Flashing Squares&Circles Loader</h6>
+            <ol id="halfkay">
+              <li>Connect the Teensy4 to your PC using a USB cable.</li>
+              <!-- <li>Press the Button on the Teensy.
+                <ul style="list-style: initial;">
+                  <sup>
+                    Make shure the teensy-loader is not running in background.
+                  </sup>
+                </ul> -->
+              <li>Click [Reset] - connect to USB device listed in the browser-popup.
+                <ul>
+                  <li><button class="btn btn-light" id="resetButton">Reset</button></li>
+                  <li>If no USB device is listet, Teensy is likely in the flashing mode, follow step 3</li>
+                </ul>
+              </li>
+              <li>Click [Flash] - connect to 'HID 16C0:0478' device listed in the browser-popup.
+                <ul>
+                  <li>
+                    <a class="text-bg-warning">Ensure the TeensyLoader is not running in background.</a>
+                  </li>
+                  <li>
+                    <div class="d-flex flex-row">
+                      <button class="btn btn-light" id="flashButton">Flash</button>
+                    </div>
+                  </li>
+                  <li>If no USB device is listet, press the Button on the teensy, and click [Flash].</li>
+                </ul>
+
+              </li>
+            </ol>
+
+            <p>If your broswer is not supporting the serial interface, you can download the <a
+                id="downloadLoader">Squares&Circles loader hex file</a> and flash it with the <a
+                href="https://www.pjrc.com/teensy/loader.html">Teensy Loader</a>.<br />
+              After flashing the loader the device startups only showing the splash screen with a blinking "Ready to
+              Update".</p>
+
+            <h4>Flashing Updates + Machines/Engines</h4>
+            <p>If the Squares&Circles device is connected to your PC, i.e. the loader or an older version has already
+              been installed, goto to <a href="#update" id="updateConnect">update</a>.</p>
+            <p>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

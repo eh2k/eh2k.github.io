@@ -1,0 +1,60 @@
+<body>
+
+    <style>
+        ::part(spec-labels) {
+            position: absolute;
+            right: 0;
+        }
+
+        textarea {
+            min-height: 260px;
+            max-width: 100px;
+        }
+
+        .osc {
+            width: 100px;
+        }
+
+        .waveform ::part(wrapper) {
+            --box-size: 28px;
+            background-image:
+                linear-gradient(transparent calc(var(--box-size) - 1px), gray var(--box-size), transparent var(--box-size)),
+                linear-gradient(90deg, transparent calc(var(--box-size) - 1px), gray var(--box-size), transparent var(--box-size));
+            background-size: 100% var(--box-size), var(--box-size) 100%;
+            background-position: 0.5px 0.5px;
+        }
+    </style>
+
+    <div class="content-wrapper">
+        <div class="container-fluid">
+            <div class="vstack">
+                <div style="height:10px">
+                </div>
+                <div class="hstack gap-2">
+                    <div class="form-floating mb-3">
+                        <select id="drumkitUrl" class="form-select"> </select>
+                        <label for="drumkitUrl">Drumkit</label>
+                    </div>
+                    <div>
+                        <a href="https://github.com/eh2k/squares-and-circles/issues/130">Learn more</a>
+                    </div>
+                    <div class="m-sm-2">
+                        <button id="compile" class="btn btn-primary">Flash</button>
+                    </div>
+                    <div hidden>
+                        <button id="load" class="btn-light btn">Load</button>
+                    </div>
+                </div>
+                <div id="bank"></div>
+                <div class="grid" id="trigs"></div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha256-CDOy6cOibCWEdsRiZuaHf8dSGGJRYuBGC+mjoJimHGw=" crossorigin="anonymous"></script>
+
+</body>
+
+</html>
